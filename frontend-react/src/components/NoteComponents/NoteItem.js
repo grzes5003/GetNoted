@@ -14,6 +14,9 @@ import IconButton from '@material-ui/core/IconButton';
 import DeleteIcon from '@material-ui/icons/Delete';
 
 import List from '@material-ui/core/List';
+import TextField from "@material-ui/core/TextField";
+import {strings} from "../../localization";
+import {AddNoteField} from "../utils/AddNoteField";
 
 const useStyles = makeStyles((theme) => ({
     root: {
@@ -76,7 +79,7 @@ export const NoteItem = ({name, tasks, editMode}) => {
                     )}
                     { editMode ?
                         <ListItem className={classes.nested}>
-                            <ListItemText primary='edit' />
+                            <AddNoteField/>
                         </ListItem>
                         :
                         null

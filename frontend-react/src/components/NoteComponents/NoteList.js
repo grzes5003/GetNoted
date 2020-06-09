@@ -10,6 +10,11 @@ import ListItem from "@material-ui/core/ListItem";
 import ListItemText from "@material-ui/core/ListItemText";
 import IconButton from '@material-ui/core/IconButton';
 import EditIcon from '@material-ui/icons/Edit';
+import TextField from '@material-ui/core/TextField';
+import {strings} from "../../localization";
+
+import AddIcon from '@material-ui/icons/Add';
+import {AddNoteField} from "../utils/AddNoteField";
 
 const GET_NOTES_LIST = gql`
 {
@@ -63,7 +68,7 @@ export const NoteList = () => {
                 <ListItem>
                     <ListItemText primary=''/>
                     <IconButton edge="end" aria-label="delete">
-                        <EditIcon onClick={changeEditModeState}/>
+                        <EditIcon onClick={changeEditModeState} color={editMode ? 'secondary' : 'primary'}/>
                     </IconButton>
                 </ListItem>
                 {data.notes.map(note => (
@@ -72,10 +77,12 @@ export const NoteList = () => {
                         </li>
                     )
                 )}
-                { editMode ?
-                    <ListItem className={classes.nested}>
-                        <ListItemText primary='edit' />
-                    </ListItem>
+                {editMode ?
+                    <li>
+                        <ListItem className={classes.nested}>
+                            <AddNoteField/>
+                        </ListItem>
+                    </li>
                     :
                     null
                 }
