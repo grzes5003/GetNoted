@@ -4,8 +4,12 @@ import {NoteItem} from "./NoteItem";
 import List from '@material-ui/core/List';
 
 import gql from 'graphql-tag';
-import {useQuery } from '@apollo/react-hooks';
+import {useQuery} from '@apollo/react-hooks';
 import {makeStyles} from "@material-ui/core/styles";
+import ListItem from "@material-ui/core/ListItem";
+import ListItemText from "@material-ui/core/ListItemText";
+import IconButton from '@material-ui/core/IconButton';
+import EditIcon from '@material-ui/icons/Edit';
 
 const GET_NOTES_LIST = gql`
 {
@@ -20,21 +24,27 @@ const GET_NOTES_LIST = gql`
 
 const useStyles = makeStyles((theme) => ({
     root: {
-        width: '100%',
+        width: '80%',
         maxWidth: 1000,
         backgroundColor: theme.palette.background.paper,
-        padding: theme.spacing(5),
+        //padding: theme.spacing(5),
 
         position: 'relative',
         left: '50%',
-        transform: 'translate(-50%)'
+        top: '30px',
+        transform: 'translate(-50%, 30px)',
+
+        height: 'min-content',
     },
 }));
 
 
 export const NoteList = () => {
 
-    const { loading, error, data } = useQuery(GET_NOTES_LIST);
+    const [editMode, setEditMode] = React.useState(false);
+    const changeEditModeState = () => setEditMode(!editMode);
+
+    const {loading, error, data} = useQuery(GET_NOTES_LIST);
 
     const classes = useStyles();
 
@@ -44,20 +54,33 @@ export const NoteList = () => {
 
     if (loading || !data) {
         return <div> Loading... </div>;
-    }
-    else if (error) {
+    } else if (error) {
         return <div> Error ${error.message} </div>;
     }
-    return (<div className={classes.root}>
-        <List>
-            {data.notes.map(note => (
-                    <li key={`$note.name`}>
-                        <NoteItem name={note.name} tasks={note.tasks} />
-                    </li>
-                )
-            )}
-        </List>
-    </div>)
+    return (
+        <div className={classes.root}>
+            <List>
+                <ListItem>
+                    <ListItemText primary=''/>
+                    <IconButton edge="end" aria-label="delete">
+                        <EditIcon onClick={changeEditModeState}/>
+                    </IconButton>
+                </ListItem>
+                {data.notes.map(note => (
+                        <li key={`$note.name`}>
+                            <NoteItem name={note.name} tasks={note.tasks} editMode={editMode}/>
+                        </li>
+                    )
+                )}
+                { editMode ?
+                    <ListItem className={classes.nested}>
+                        <ListItemText primary='edit' />
+                    </ListItem>
+                    :
+                    null
+                }
+            </List>
+        </div>)
 };
 
 //<Divider variant="inset" component="li" />

@@ -10,6 +10,8 @@ import ExpansionPanel from '@material-ui/core/ExpansionPanel';
 import ExpansionPanelSummary from '@material-ui/core/ExpansionPanelSummary';
 import ExpansionPanelDetails from '@material-ui/core/ExpansionPanelDetails';
 import Divider from "@material-ui/core/Divider";
+import IconButton from '@material-ui/core/IconButton';
+import DeleteIcon from '@material-ui/icons/Delete';
 
 import List from '@material-ui/core/List';
 
@@ -25,7 +27,7 @@ const useStyles = makeStyles((theme) => ({
     },
 }));
 
-export const NoteItem = ({name, tasks}) => {
+export const NoteItem = ({name, tasks, editMode}) => {
 
     const [activeItem, setActiveItem] = React.useState(1);
 
@@ -41,10 +43,17 @@ export const NoteItem = ({name, tasks}) => {
                         </Avatar>
                     </ListItemAvatar>
                     <ListItemText primary={name}/>
+                    { editMode ?
+                        <IconButton edge="end" aria-label="delete">
+                            <DeleteIcon/>
+                        </IconButton>
+                        :
+                        null
+                    }
                 </ListItem>
             </ExpansionPanelSummary>
             <ExpansionPanelDetails>
-                <List>
+                <List className='sublist-body'>
                     {tasks.map(note => (
                         <li>
                             <ListItem className={classes.nested}>
@@ -53,12 +62,25 @@ export const NoteItem = ({name, tasks}) => {
                                     </Avatar>
                                 </ListItemAvatar>
                                 <ListItemText primary={note.name} />
-
+                                { editMode ?
+                                    <IconButton edge="end" aria-label="delete">
+                                        <DeleteIcon/>
+                                    </IconButton>
+                                    :
+                                    null
+                                }
                             </ListItem>
                             <Divider variant="inset" component="li" />
                         </li>
                         )
                     )}
+                    { editMode ?
+                        <ListItem className={classes.nested}>
+                            <ListItemText primary='edit' />
+                        </ListItem>
+                        :
+                        null
+                    }
                 </List>
             </ExpansionPanelDetails>
         </ExpansionPanel>

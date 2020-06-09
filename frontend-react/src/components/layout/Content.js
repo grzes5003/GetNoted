@@ -10,6 +10,7 @@ const useStyles = makeStyles((theme) => ({
 
     root: {
         display: 'flex',
+        height: '100%',
     },
 
     drawer: {
@@ -32,8 +33,10 @@ export const Content = () => {
 
     return (
         <section className={classes.root}>
-            <LeftDrawer className={classes.drawer} />
-            <NoteList className={classes.appBar}/>
+            <LeftDrawer className={classes.drawer}/>
+            <div className='content-div'>
+                <NoteList className={classes.appBar}/>
+            </div>
         </section>
     )
-}
+};

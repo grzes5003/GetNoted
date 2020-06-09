@@ -28,6 +28,8 @@ const useStyles = makeStyles((theme) => ({
             width: drawerWidth,
             flexShrink: 0,
         },
+
+        background: 'white',
     },
 }));
 
