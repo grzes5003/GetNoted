@@ -16,12 +16,18 @@ import {strings} from "../../localization";
 import AddIcon from '@material-ui/icons/Add';
 import {AddNoteField} from "../utils/AddNoteField";
 
+import {DragDropContext, Droppable, Draggable} from "react-beautiful-dnd";
+
 const GET_NOTES_LIST = gql`
 {
     notes {
         name 
+        number
+        UUID
         tasks {
             name
+            number
+            UUID
         }
     }
 }
@@ -35,9 +41,12 @@ const useStyles = makeStyles((theme) => ({
         //padding: theme.spacing(5),
 
         position: 'relative',
-        left: '50%',
+        //left: '50%',
         top: '30px',
-        transform: 'translate(-50%, 30px)',
+        //transform: 'translate(-50%, 30px)',
+
+        marginLeft: 'auto',
+        marginRight: 'auto',
 
         height: 'min-content',
     },
@@ -62,6 +71,52 @@ export const NoteList = () => {
     } else if (error) {
         return <div> Error ${error.message} </div>;
     }
+
+    const reorder = (list, startIndex, endIndex) => {
+        const result = Array.from(list);
+        const [removed] = result.splice(startIndex, 1);
+        result.splice(endIndex, 0, removed);
+
+        return result;
+    };
+
+
+
+    const getListStyle = isDraggingOver => ({
+        //background: isDraggingOver ? "lightblue" : "",
+        //padding: grid,
+        //width: 250
+    });
+
+    const getItemStyle = (isDragging, draggableStyle) => ({
+        // some basic styles to make the items look a bit nicer
+        userSelect: "none",
+        //padding: grid * 2,
+        //margin: `0 0 ${grid}px 0`,
+
+        // change background colour if dragging
+        //background: isDragging ? "lightgreen" : "",
+
+        // styles we need to apply on draggables
+        ...draggableStyle
+    });
+
+    const onDragEnd = (result) => {
+        // dropped outside the list
+        if (!result.destination) {
+            return;
+        }
+
+        const items = reorder(
+            data.notes,
+            result.source.index,
+            result.destination.index
+        );
+
+        data.notes = items;
+    };
+
+
     return (
         <div className={classes.root}>
             <List>
@@ -71,12 +126,38 @@ export const NoteList = () => {
                         <EditIcon onClick={changeEditModeState} color={editMode ? 'secondary' : 'primary'}/>
                     </IconButton>
                 </ListItem>
-                {data.notes.map(note => (
-                        <li key={`$note.name`}>
-                            <NoteItem name={note.name} tasks={note.tasks} editMode={editMode}/>
-                        </li>
-                    )
-                )}
+                <DragDropContext onDragEnd={onDragEnd}>
+                    <Droppable droppableId="droppable">
+                        {(provided, snapshot) => (
+                            <div
+                                {...provided.droppableProps}
+                                ref={provided.innerRef}
+                                style={getListStyle(snapshot.isDraggingOver)}
+                            >
+                                {data.notes.map((note, index) => (
+                                        <Draggable key={note.number} draggableId={note.UUID} index={index}>
+                                            {(provided, snapshot) => (
+                                                <div
+                                                    ref={provided.innerRef}
+                                                    {...provided.draggableProps}
+                                                    {...provided.dragHandleProps}
+                                                    style={getItemStyle(
+                                                        snapshot.isDragging,
+                                                        provided.draggableProps.style
+                                                    )}
+                                                >
+                                                    <li key={`$note.name`}>
+                                                        <NoteItem name={note.name} tasks={note.tasks} editMode={editMode}/>
+                                                    </li>
+                                                </div>
+                                            )}
+                                        </Draggable>
+                                    )
+                                )}
+                            </div>
+                        )}
+                    </Droppable>
+                </DragDropContext>
                 {editMode ?
                     <li>
                         <ListItem className={classes.nested}>

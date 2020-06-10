@@ -1,4 +1,23 @@
+const {v4} = require('uuid');
 const {ApolloServer, MockList, gql} = require('apollo-server');
+
+
+const Tasks = ['WWW', 'JPWP', 'UST', 'TR', 'CPS'].map((str, index) => (
+    {
+        number: index,
+        UUID: v4(),
+        name: str,
+    }
+));
+
+const Notes = ['Semestr Letni', 'Staż'].map((str, index) => (
+    {
+        number: index,
+        UUID: v4(),
+        name: str,
+        tasks: Tasks,
+    }
+));
 
 const typeDefs = gql`
   type Query {
@@ -9,11 +28,15 @@ const typeDefs = gql`
   }
   
   type Note {
+    UUID: String
+    number: Int
     name: String
     tasks: [Task]
   }
   
   type Task {
+    number: Int
+    UUID: String
     name: String
   }
   
@@ -23,7 +46,7 @@ const typeDefs = gql`
   }
 `;
 
-const resolvers = {
+const resolvers2 = {
     Query: {
         resolved: () => 'Resolved',
         people: () => new MockList([5, 12]),
@@ -31,10 +54,20 @@ const resolvers = {
     },
 };
 
+const resolvers = {
+    Query: {
+        resolved: () => 'Resolved',
+        people: () => new MockList([5, 12]),
+        notes: () =>  {
+            return Notes
+        }
+    }
+};
+
 const mocks = {
-    Int: () => 6,
+    Int: () => Math.floor(Math.random() * (10000 - 1000 + 1)) + 1000,
     Float: () => 22.1,
-    String: () => 'some String',
+    String: () => v4(),//'some String',
     Person: () => ({
         name: "name",
         age: () => 15,
@@ -44,7 +77,7 @@ const mocks = {
 const server = new ApolloServer({
     typeDefs,
     resolvers,
-    mocks: mocks,
+    // mocks: mocks,
 });
 
 server.listen().then(({url}) => {
