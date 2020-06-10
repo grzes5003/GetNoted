@@ -14,6 +14,8 @@ export const strings = new LocalizedStrings({
         allNotes: "All",
         soonNotes: "Coming",
         recentlyDoneNotes: "Recently done",
+        undo: "UNDO",
+        deleteDataAlert: "Record deleted successfully",
     },
     it: {
         how:"Come vuoi il tuo uovo oggi?",
@@ -31,6 +33,8 @@ export const strings = new LocalizedStrings({
         allNotes: "Wszystkie",
         soonNotes: "Nadchodzące",
         recentlyDoneNotes: "Ostatnio wykonane",
+        deleteDataAlert: "Wpis usunięty poprawnie",
+        undo: "COFNIJ"
     }
 
 });

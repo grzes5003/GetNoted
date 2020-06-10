@@ -4,7 +4,7 @@ import {NoteItem} from "./NoteItem";
 import List from '@material-ui/core/List';
 
 import gql from 'graphql-tag';
-import {useQuery} from '@apollo/react-hooks';
+import {useMutation, useQuery} from '@apollo/react-hooks';
 import {makeStyles} from "@material-ui/core/styles";
 import ListItem from "@material-ui/core/ListItem";
 import ListItemText from "@material-ui/core/ListItemText";
@@ -16,20 +16,31 @@ import {strings} from "../../localization";
 import AddIcon from '@material-ui/icons/Add';
 import {AddNoteField} from "../utils/AddNoteField";
 
+import { ToastProvider, useToasts } from 'react-toast-notifications'
+
 import {DragDropContext, Droppable, Draggable} from "react-beautiful-dnd";
 
 const GET_NOTES_LIST = gql`
 {
-    notes {
+    categories {
         name 
         number
         UUID
+        date
         tasks {
             name
             number
             UUID
+            date
+            status
         }
     }
+}
+`;
+
+const SWAP_NOTES = gql`
+mutation SwapCategoryPlaces($first: Int!, $second: Int!) {
+    swapCategoryPlaces(first: $first, second: $second)
 }
 `;
 
@@ -59,6 +70,7 @@ export const NoteList = () => {
     const changeEditModeState = () => setEditMode(!editMode);
 
     const {loading, error, data} = useQuery(GET_NOTES_LIST);
+    const [swapCategoryPlaces, _] = useMutation(SWAP_NOTES);
 
     const classes = useStyles();
 
@@ -77,8 +89,11 @@ export const NoteList = () => {
         const [removed] = result.splice(startIndex, 1);
         result.splice(endIndex, 0, removed);
 
+        swapCategoryPlaces({variables: {first: startIndex, second: endIndex}}).then();
+
         return result;
     };
+
 
 
 
@@ -108,12 +123,12 @@ export const NoteList = () => {
         }
 
         const items = reorder(
-            data.notes,
+            data.categories,
             result.source.index,
             result.destination.index
         );
 
-        data.notes = items;
+        data.categories = items;
     };
 
 
@@ -134,7 +149,7 @@ export const NoteList = () => {
                                 ref={provided.innerRef}
                                 style={getListStyle(snapshot.isDraggingOver)}
                             >
-                                {data.notes.map((note, index) => (
+                                {data.categories.map((note, index) => (
                                         <Draggable key={note.number} draggableId={note.UUID} index={index}>
                                             {(provided, snapshot) => (
                                                 <div
@@ -146,9 +161,8 @@ export const NoteList = () => {
                                                         provided.draggableProps.style
                                                     )}
                                                 >
-                                                    <li key={`$note.name`}>
-                                                        <NoteItem name={note.name} tasks={note.tasks} editMode={editMode}/>
-                                                    </li>
+                                                    <NoteItem key={note.UUID} category={note} tasks={note.tasks}
+                                                              editMode={editMode}/>
                                                 </div>
                                             )}
                                         </Draggable>

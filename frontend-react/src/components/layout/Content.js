@@ -2,6 +2,10 @@ import React from 'react';
 import {NoteList} from "../NoteComponents/NoteList";
 import {LeftDrawer} from "./LeftDrawer";
 import {makeStyles} from "@material-ui/core/styles";
+import {Footer} from "./Footer";
+
+import {ToastProvider, useToasts} from 'react-toast-notifications'
+import {strings} from "../../localization";
 
 const drawerWidth = 240;
 
@@ -31,12 +35,18 @@ const useStyles = makeStyles((theme) => ({
 export const Content = () => {
     const classes = useStyles();
 
+    const [alertType, setAlertType] = React.useState("");
+
+
     return (
         <section className={classes.root}>
             <LeftDrawer className={classes.drawer}/>
             <div className='content-div'>
-                <NoteList className={classes.appBar}/>
+                <ToastProvider>
+                    <NoteList className={classes.appBar}/>
+                </ToastProvider>
             </div>
+            <Footer alertType={alertType}/>
         </section>
     )
 };

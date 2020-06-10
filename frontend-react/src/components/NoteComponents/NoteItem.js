@@ -18,6 +18,13 @@ import TextField from "@material-ui/core/TextField";
 import {strings} from "../../localization";
 import {AddNoteField} from "../utils/AddNoteField";
 
+import Badge from '@material-ui/core/Badge';
+import Typography from "@material-ui/core/Typography";
+import ExpansionPanelActions from '@material-ui/core/ExpansionPanelActions';
+import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
+import {DeleteAlert} from "../layout/DeleteAlert";
+import {useToasts} from "react-toast-notifications";
+
 const useStyles = makeStyles((theme) => ({
     root: {
         width: '100%',
@@ -28,28 +35,61 @@ const useStyles = makeStyles((theme) => ({
         paddingLeft: theme.spacing(10),
         width: '100%',
     },
+    grow: {
+        flexGrow: 1,
+    },
 }));
 
-export const NoteItem = ({name, tasks, editMode}) => {
+export const NoteItem = ({category, tasks, editMode}) => {
+
+    const { addToast } = useToasts();
 
     const [activeItem, setActiveItem] = React.useState(1);
+    const [expanded, setExpanded] = React.useState(false);
+    //const [isDisabled, setIsDisabled] = React.useState(false);
 
     const classes = useStyles();
 
+    const showDeleteAlert = () => {
+        addToast(strings.deleteDataAlert, {
+            appearance: 'info',
+            autoDismiss: true,
+        })
+    };
+
+    const handleChange = panel => () => {
+        setExpanded(expanded !== panel ? panel : !panel);
+    };
+
+    const scalarToTimeString = (date) => {
+        let d = new Date(date);
+        return d.toLocaleDateString("en-US");
+    };
+
+    const renderNewDeleteAlert = () => {
+
+    };
+
     return (
-        <ExpansionPanel>
-            <ExpansionPanelSummary>
+        <ExpansionPanel expanded={expanded}>
+            <ExpansionPanelSummary
+                expandIcon={<ExpandMoreIcon onClick={handleChange(expanded)} />}
+            >
                 <ListItem>
                     <ListItemAvatar>
-                        <Avatar>
+                        <Badge badgeContent={category.tasks.filter(v => v.status).length} color="primary">
+                        <Avatar onClick={handleChange(expanded)} >
 
                         </Avatar>
+                        </Badge>
                     </ListItemAvatar>
-                    <ListItemText primary={name}/>
+                    <ListItemText primary={category.name}  onClick={handleChange(expanded)}/>
                     { editMode ?
+                        <ExpansionPanelActions>
                         <IconButton edge="end" aria-label="delete">
-                            <DeleteIcon/>
+                            <DeleteIcon onClick={renderNewDeleteAlert()}/>
                         </IconButton>
+                        </ExpansionPanelActions>
                         :
                         null
                     }
@@ -58,23 +98,24 @@ export const NoteItem = ({name, tasks, editMode}) => {
             <ExpansionPanelDetails>
                 <List className='sublist-body'>
                     {tasks.map(note => (
-                        <li>
+                        <div>
                             <ListItem className={classes.nested}>
                                 <ListItemAvatar>
                                     <Avatar>
                                     </Avatar>
                                 </ListItemAvatar>
-                                <ListItemText primary={note.name} />
+                                <ListItemText primary={note.name} secondary={note.status.toString()}/>
+                                <ListItemText primary={scalarToTimeString(note.date) } />
                                 { editMode ?
-                                    <IconButton edge="end" aria-label="delete">
-                                        <DeleteIcon/>
+                                    <IconButton edge="end" aria-label="delete" >
+                                        <DeleteIcon onClick={console.log("KLIKLEM " + note.name)}/>
                                     </IconButton>
                                     :
                                     null
                                 }
                             </ListItem>
                             <Divider variant="inset" component="li" />
-                        </li>
+                        </div>
                         )
                     )}
                     { editMode ?
