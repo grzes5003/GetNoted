@@ -67,7 +67,7 @@ const typeDefs = gql`
   
   type Subscription {
     categoryAdded: Category
-    taskAdded: Task
+    taskAdded: Category
   }
   
   type Category {
@@ -144,7 +144,7 @@ const resolvers = {
                 status: false, // TODO change
             });
 
-            pubsub.publish(TASK_ADDED, {taskAdded: Categories.find(x => x.UUID === args.categoryUUID).tasks[Categories.find(x => x.UUID === args.categoryUUID).tasks.length - 1]});
+            pubsub.publish(TASK_ADDED, {taskAdded: Categories.find(x => x.UUID === args.categoryUUID)});
             return Categories.find(x => x.UUID === args.categoryUUID).tasks[Categories.find(x => x.UUID === args.categoryUUID).tasks.length - 1];
         }
     },

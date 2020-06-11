@@ -63,6 +63,24 @@ const CATEGORY_SUBSCRIPTION = gql`
   }
 `;
 
+const TASK_SUBSCRIPTION = gql`
+  subscription TaskAdded {
+    taskAdded {
+      number
+      name
+      UUID
+      tasks {
+        UUID
+        name
+        date
+        status
+        number
+      }
+      date
+    }
+  }
+`;
+
 
 const useStyles = makeStyles((theme) => ({
     root: {
@@ -114,6 +132,20 @@ export const NoteList = () => {
 
                 return Object.assign({}, prev, {
                         categories: [...prev.categories,newFeedItem]
+                });
+            }
+        });
+
+        subscribeToMore({
+            document: TASK_SUBSCRIPTION,
+            updateQuery: (prev, {subscriptionData }) => {
+                if (!subscriptionData.data) return prev;
+                const newFeedItem = subscriptionData.data.taskAdded;
+
+                console.log(prev);
+
+                return Object.assign({}, prev, {
+                    categories: [...prev.categories.map(obj => newFeedItem.UUID === obj.UUID ? newFeedItem : obj)]
                 });
             }
         })
