@@ -4,8 +4,8 @@ import {LeftDrawer} from "./LeftDrawer";
 import {makeStyles} from "@material-ui/core/styles";
 import {Footer} from "./Footer";
 
-import {ToastProvider, useToasts} from 'react-toast-notifications'
-import {strings} from "../../localization";
+import {ToastProvider, DefaultToast} from 'react-toast-notifications'
+import {DeleteAlert} from "./DeleteAlert";
 
 const drawerWidth = 240;
 
@@ -40,13 +40,20 @@ export const Content = () => {
 
     return (
         <section className={classes.root}>
-            <LeftDrawer className={classes.drawer}/>
-            <div className='content-div'>
-                <ToastProvider>
+            <ToastProvider components={{Toast: CustomToast}}>
+                <LeftDrawer className={classes.drawer}/>
+                <div className='content-div'>
                     <NoteList className={classes.appBar}/>
-                </ToastProvider>
-            </div>
-            <Footer alertType={alertType}/>
+                </div>
+            </ToastProvider>
         </section>
     )
 };
+
+const CustomToast = ({children, ...props}) => (
+    <DefaultToast {...props}>
+        <div className='toast-alert'>
+            <DeleteAlert text={children} dismiss={props.onDismiss}/>
+        </div>
+    </DefaultToast>
+);

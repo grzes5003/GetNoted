@@ -25,6 +25,8 @@ import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
 import {DeleteAlert} from "../layout/DeleteAlert";
 import {useToasts} from "react-toast-notifications";
 
+import {constants} from "../../constants";
+
 const useStyles = makeStyles((theme) => ({
     root: {
         width: '100%',
@@ -50,24 +52,30 @@ export const NoteItem = ({category, tasks, editMode}) => {
 
     const classes = useStyles();
 
+    // shows toast alert if deletion is successful
     const showDeleteAlert = () => {
         addToast(strings.deleteDataAlert, {
-            appearance: 'info',
+            appearance: 'success',
             autoDismiss: true,
         })
     };
 
+    // handles delete button
+    const handleDeleteClick = e => {
+        console.log('klink ', e);
+        e.stopPropagation();
+        showDeleteAlert();
+    };
+
+    // custom handler for expandable list
     const handleChange = panel => () => {
         setExpanded(expanded !== panel ? panel : !panel);
     };
 
+    // formats scalar as date string
     const scalarToTimeString = (date) => {
         let d = new Date(date);
         return d.toLocaleDateString("en-US");
-    };
-
-    const renderNewDeleteAlert = () => {
-
     };
 
     return (
@@ -87,7 +95,7 @@ export const NoteItem = ({category, tasks, editMode}) => {
                     { editMode ?
                         <ExpansionPanelActions>
                         <IconButton edge="end" aria-label="delete">
-                            <DeleteIcon onClick={renderNewDeleteAlert()}/>
+                            <DeleteIcon onClick={handleDeleteClick}/>
                         </IconButton>
                         </ExpansionPanelActions>
                         :
@@ -108,7 +116,7 @@ export const NoteItem = ({category, tasks, editMode}) => {
                                 <ListItemText primary={scalarToTimeString(note.date) } />
                                 { editMode ?
                                     <IconButton edge="end" aria-label="delete" >
-                                        <DeleteIcon onClick={console.log("KLIKLEM " + note.name)}/>
+                                        <DeleteIcon onClick={handleDeleteClick}/>
                                     </IconButton>
                                     :
                                     null
@@ -120,7 +128,7 @@ export const NoteItem = ({category, tasks, editMode}) => {
                     )}
                     { editMode ?
                         <ListItem className={classes.nested}>
-                            <AddNoteField/>
+                            <AddNoteField ctx={constants.CTX_TASK}/>
                         </ListItem>
                         :
                         null

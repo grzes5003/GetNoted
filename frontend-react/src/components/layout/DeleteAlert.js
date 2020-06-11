@@ -1,8 +1,10 @@
 import React from 'react';
-import { makeStyles } from '@material-ui/core/styles';
-import Alert from '@material-ui/lab/Alert';
+import {makeStyles} from '@material-ui/core/styles';
 import Button from '@material-ui/core/Button';
 import {strings} from "../../localization";
+
+import Typography from '@material-ui/core/Typography';
+import Grid from "@material-ui/core/Grid";
 
 const useStyles = makeStyles((theme) => ({
     root: {
@@ -13,21 +15,18 @@ const useStyles = makeStyles((theme) => ({
     },
 }));
 
-export const DeleteAlert = () => {
+export const DeleteAlert = ({text, dismiss}) => {
     const classes = useStyles();
 
     return (
-        <div className={classes.root}>
-            <Alert
-                onClose={() => {}}
-                action={
-                    <Button color="inherit" size="small">
-                        {strings.undo}
-                    </Button>
-                }
-            >
-                {strings.deleteDataAlert}
-            </Alert>
-        </div>
+        <Grid container justify="space-around">
+            <Typography variant="body2" component="p">
+                {text}
+            </Typography>
+            {
+                text === strings.deleteDataAlert ?
+                    <Button variant="outlined" size="small" onClick={dismiss}>{strings.undo}</Button> : null
+            }
+        </Grid>
     );
 };

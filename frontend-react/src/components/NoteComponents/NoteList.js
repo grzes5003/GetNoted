@@ -16,9 +16,10 @@ import {strings} from "../../localization";
 import AddIcon from '@material-ui/icons/Add';
 import {AddNoteField} from "../utils/AddNoteField";
 
-import { ToastProvider, useToasts } from 'react-toast-notifications'
+import {ToastProvider, useToasts} from 'react-toast-notifications'
 
 import {DragDropContext, Droppable, Draggable} from "react-beautiful-dnd";
+import {constants} from "../../constants";
 
 const GET_NOTES_LIST = gql`
 {
@@ -84,6 +85,7 @@ export const NoteList = () => {
         return <div> Error ${error.message} </div>;
     }
 
+    // swaps list items based on startIndex and endIndex
     const reorder = (list, startIndex, endIndex) => {
         const result = Array.from(list);
         const [removed] = result.splice(startIndex, 1);
@@ -93,8 +95,6 @@ export const NoteList = () => {
 
         return result;
     };
-
-
 
 
     const getListStyle = isDraggingOver => ({
@@ -173,11 +173,9 @@ export const NoteList = () => {
                     </Droppable>
                 </DragDropContext>
                 {editMode ?
-                    <li>
-                        <ListItem className={classes.nested}>
-                            <AddNoteField/>
-                        </ListItem>
-                    </li>
+                    <ListItem className={classes.nested}>
+                        <AddNoteField ctx={constants.CTX_CATEGORY}/>
+                    </ListItem>
                     :
                     null
                 }

@@ -57,6 +57,7 @@ const typeDefs = gql`
   
   type Mutation {
     swapCategoryPlaces(first: Int!, second: Int!): Boolean
+    addNewCategory
   }
   
   type Category {
