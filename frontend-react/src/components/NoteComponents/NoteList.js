@@ -1,10 +1,10 @@
-import React from "react";
+import React, {useEffect} from "react";
 import {NoteItem} from "./NoteItem";
 
 import List from '@material-ui/core/List';
 
 import gql from 'graphql-tag';
-import {useMutation, useQuery} from '@apollo/react-hooks';
+import {useMutation, useQuery, useSubscription} from '@apollo/react-hooks';
 import {makeStyles} from "@material-ui/core/styles";
 import ListItem from "@material-ui/core/ListItem";
 import ListItemText from "@material-ui/core/ListItemText";
@@ -45,6 +45,25 @@ mutation SwapCategoryPlaces($first: Int!, $second: Int!) {
 }
 `;
 
+const CATEGORY_SUBSCRIPTION = gql`
+  subscription CategoryAdded {
+    categoryAdded {
+      number
+      name
+      UUID
+      tasks {
+        UUID
+        name
+        date
+        status
+        number
+      }
+      date
+    }
+  }
+`;
+
+
 const useStyles = makeStyles((theme) => ({
     root: {
         width: '80%',
@@ -72,8 +91,37 @@ export const NoteList = () => {
     const [editMode, setEditMode] = React.useState(false);
     const changeEditModeState = () => setEditMode(!editMode);
 
-    const {loading, error, data} = useQuery(GET_NOTES_LIST);
+    const {subscribeToMore, loading, error, data} = useQuery(GET_NOTES_LIST);
     const [swapCategoryPlaces, _] = useMutation(SWAP_NOTES);
+
+    //const { data_sub, loading_sub } = useSubscription(CATEGORY_SUBSCRIPTION);
+
+    //console.log("NEW SUB INFO", data_sub, loading_sub);
+
+    //if(!loading_sub && data_sub) {
+    //    data.concat(data_sub);
+    //    console.log("NEW SUB INFO")
+    //}
+
+    const subscribeToNewCategories = () => {
+        subscribeToMore({
+            document: CATEGORY_SUBSCRIPTION,
+            updateQuery: (prev, {subscriptionData }) => {
+                if (!subscriptionData.data) return prev;
+                const newFeedItem = subscriptionData.data.categoryAdded;
+
+                console.log(prev);
+
+                return Object.assign({}, prev, {
+                        categories: [...prev.categories,newFeedItem]
+                });
+            }
+        })
+    };
+
+    useEffect(() => {
+        subscribeToNewCategories();
+    }, []);
 
     const classes = useStyles();
 

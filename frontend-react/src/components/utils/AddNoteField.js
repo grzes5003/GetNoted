@@ -110,7 +110,7 @@ export const AddNoteField = ({ctx, cat}) => {
             // TODO handle error
         }
 
-        window.location.reload(false);
+        //window.location.reload(false);
 
     };
 

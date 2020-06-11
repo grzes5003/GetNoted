@@ -1,7 +1,11 @@
 const {v4} = require('uuid');
-const {ApolloServer, MockList, gql} = require('apollo-server');
+const {ApolloServer, MockList, gql, PubSub} = require('apollo-server');
 
 let now = new Date();
+const pubsub = new PubSub();
+
+const CATEGORY_ADDED = 'CATEGORY_ADDED';
+const TASK_ADDED = 'TASK_ADDED';
 
 const Tasks1 = ['WWW', 'JPWP', 'UST', 'TR', 'CPS'].map((str, index) => (
     {
@@ -33,7 +37,7 @@ const Tasks3 = ['Morskie', 'Gory'].map((str, index) => (
     }
 ));
 
-const Tasks = [ Tasks1, Tasks2, Tasks3 ];
+const Tasks = [Tasks1, Tasks2, Tasks3];
 
 let Categories = ['Semestr Letni', 'Staż', 'Wakacje 2020'].map((str, index) => (
     {
@@ -61,6 +65,11 @@ const typeDefs = gql`
     addNewTask(name: String!, categoryUUID: String!): Task
   }
   
+  type Subscription {
+    categoryAdded: Category
+    taskAdded: Task
+  }
+  
   type Category {
     UUID: String
     number: Int
@@ -83,7 +92,7 @@ const typeDefs = gql`
   }
 `;
 
-let tmpList = [0,1,2,3,4,5,6,7];
+let tmpList = [0, 1, 2, 3, 4, 5, 6, 7];
 
 const resolvers2 = {
     Query: {
@@ -97,7 +106,7 @@ const resolvers = {
     Query: {
         resolved: () => 'Resolved',
         people: () => new MockList([5, 12]),
-        categories: () =>  {
+        categories: () => {
             return Categories
         }
     },
@@ -121,6 +130,9 @@ const resolvers = {
                 tasks: [],
                 date: args.date,
             });
+
+            console.log("new Category mutation");
+            pubsub.publish(CATEGORY_ADDED, {categoryAdded: Categories[Categories.length - 1]});
             return Categories[Categories.length - 1];
         },
         addNewTask: (_, args) => {
@@ -131,9 +143,19 @@ const resolvers = {
                 date: Categories.find(x => x.UUID === args.categoryUUID).date,
                 status: false, // TODO change
             });
+
+            pubsub.publish(TASK_ADDED, {taskAdded: Categories.find(x => x.UUID === args.categoryUUID).tasks[Categories.find(x => x.UUID === args.categoryUUID).tasks.length - 1]});
             return Categories.find(x => x.UUID === args.categoryUUID).tasks[Categories.find(x => x.UUID === args.categoryUUID).tasks.length - 1];
         }
-    }
+    },
+    Subscription: {
+        categoryAdded: {
+            subscribe: () => (pubsub.asyncIterator([CATEGORY_ADDED])),
+        },
+        taskAdded: {
+            subscribe: () => pubsub.asyncIterator([TASK_ADDED]),
+        }
+    },
 };
 
 const mocks = {
@@ -150,6 +172,14 @@ const server = new ApolloServer({
     typeDefs,
     resolvers,
     // mocks: mocks,
+    subscriptions: {
+        onConnect: (connectionParams, webSocket, context) => {
+            console.log("connected")
+        },
+        onDisconnect: (webSocket, context) => {
+            console.log("disconnected")
+        },
+    },
 });
 
 server.listen().then(({url}) => {
