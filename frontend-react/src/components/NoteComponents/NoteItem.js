@@ -78,6 +78,12 @@ export const NoteItem = ({category, tasks, editMode}) => {
         return d.toLocaleDateString("en-US");
     };
 
+    // counts number of tasks in particular category
+    const countTasks = t => {
+        if(t === null) return 0;
+        return t.filter(v => v.status).length
+    };
+
     return (
         <ExpansionPanel expanded={expanded}>
             <ExpansionPanelSummary
@@ -85,7 +91,7 @@ export const NoteItem = ({category, tasks, editMode}) => {
             >
                 <ListItem>
                     <ListItemAvatar>
-                        <Badge badgeContent={category.tasks.filter(v => v.status).length} color="primary">
+                        <Badge badgeContent={countTasks(category.tasks)} color="primary">
                         <Avatar onClick={handleChange(expanded)} >
 
                         </Avatar>
@@ -104,36 +110,42 @@ export const NoteItem = ({category, tasks, editMode}) => {
                 </ListItem>
             </ExpansionPanelSummary>
             <ExpansionPanelDetails>
-                <List className='sublist-body'>
-                    {tasks.map(note => (
-                        <div>
+                { category.tasks.length !== 0 ?
+                    <List className='sublist-body'>
+                        {tasks.map(note => (
+                                <div>
+                                    <ListItem className={classes.nested}>
+                                        <ListItemAvatar>
+                                            <Avatar>
+                                            </Avatar>
+                                        </ListItemAvatar>
+                                        <ListItemText primary={note.name} secondary={note.status.toString()}/>
+                                        <ListItemText primary={scalarToTimeString(note.date)}/>
+                                        {editMode ?
+                                            <IconButton edge="end" aria-label="delete">
+                                                <DeleteIcon onClick={handleDeleteClick}/>
+                                            </IconButton>
+                                            :
+                                            null
+                                        }
+                                    </ListItem>
+                                    <Divider variant="inset" component="li"/>
+                                </div>
+                            )
+                        )}
+                        {editMode ?
                             <ListItem className={classes.nested}>
-                                <ListItemAvatar>
-                                    <Avatar>
-                                    </Avatar>
-                                </ListItemAvatar>
-                                <ListItemText primary={note.name} secondary={note.status.toString()}/>
-                                <ListItemText primary={scalarToTimeString(note.date) } />
-                                { editMode ?
-                                    <IconButton edge="end" aria-label="delete" >
-                                        <DeleteIcon onClick={handleDeleteClick}/>
-                                    </IconButton>
-                                    :
-                                    null
-                                }
+                                <AddNoteField ctx={constants.CTX_TASK} cat={category}/>
                             </ListItem>
-                            <Divider variant="inset" component="li" />
-                        </div>
-                        )
-                    )}
-                    { editMode ?
-                        <ListItem className={classes.nested}>
-                            <AddNoteField ctx={constants.CTX_TASK}/>
-                        </ListItem>
-                        :
-                        null
-                    }
-                </List>
+                            :
+                            null
+                        }
+                    </List>
+                    :
+                    <ListItem className={classes.nested}>
+                        <AddNoteField ctx={constants.CTX_TASK} cat={category}/>
+                    </ListItem>
+                }
             </ExpansionPanelDetails>
         </ExpansionPanel>
     )

@@ -67,6 +67,8 @@ const useStyles = makeStyles((theme) => ({
 
 export const NoteList = () => {
 
+    const [pageData, setPageData] = React.useState();
+
     const [editMode, setEditMode] = React.useState(false);
     const changeEditModeState = () => setEditMode(!editMode);
 
@@ -77,7 +79,6 @@ export const NoteList = () => {
 
     console.log(data);
 
-    //const notes = [{name: "name", date: "today"}, {name: "name2", date: "tomorrow"}];
 
     if (loading || !data) {
         return <div> Loading... </div>;

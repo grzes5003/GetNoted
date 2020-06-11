@@ -57,7 +57,8 @@ const typeDefs = gql`
   
   type Mutation {
     swapCategoryPlaces(first: Int!, second: Int!): Boolean
-    addNewCategory
+    addNewCategory(name: String!, date: Date): Category
+    addNewTask(name: String!, categoryUUID: String!): Task
   }
   
   type Category {
@@ -111,6 +112,26 @@ const resolvers = {
             console.log('swaped places');
             //console.log(tmpList);
             return true;
+        },
+        addNewCategory: (_, args) => {
+            Categories.push({
+                number: Categories.length,
+                UUID: v4(),
+                name: args.name,
+                tasks: [],
+                date: args.date,
+            });
+            return Categories[Categories.length - 1];
+        },
+        addNewTask: (_, args) => {
+            Categories.find(x => x.UUID === args.categoryUUID).tasks.push({
+                number: Categories.find(x => x.UUID === args.categoryUUID).tasks.length,
+                UUID: v4(),
+                name: args.name,
+                date: Categories.find(x => x.UUID === args.categoryUUID).date,
+                status: false, // TODO change
+            });
+            return Categories.find(x => x.UUID === args.categoryUUID).tasks[Categories.find(x => x.UUID === args.categoryUUID).tasks.length - 1];
         }
     }
 };
