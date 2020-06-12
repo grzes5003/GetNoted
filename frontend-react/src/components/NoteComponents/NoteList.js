@@ -20,6 +20,7 @@ import {ToastProvider, useToasts} from 'react-toast-notifications'
 
 import {DragDropContext, Droppable, Draggable} from "react-beautiful-dnd";
 import {constants} from "../../constants";
+import CircularProgress from "@material-ui/core/CircularProgress";
 
 const GET_NOTES_LIST = gql`
 {
@@ -78,6 +79,30 @@ const TASK_SUBSCRIPTION = gql`
       }
       date
     }
+  }
+`;
+
+const  TASK_DELETED = gql`
+  subscription TaskDeleted {
+    taskDeleted {
+      number
+      name
+      UUID
+      tasks {
+        UUID
+        name
+        date
+        status
+        number
+      }
+      date
+    }
+  }
+`;
+
+const  CATEGORY_DELETED = gql`
+  subscription CategoryDeleted {
+    categoryDeleted  
   }
 `;
 
@@ -148,7 +173,43 @@ export const NoteList = () => {
                     categories: [...prev.categories.map(obj => newFeedItem.UUID === obj.UUID ? newFeedItem : obj)]
                 });
             }
-        })
+        });
+
+        subscribeToMore({
+            document: CATEGORY_DELETED,
+            updateQuery: (prev, {subscriptionData }) => {
+                if (!subscriptionData.data) return prev;
+                const uuid = subscriptionData.data.categoryDeleted;
+
+                console.log(prev, uuid, subscriptionData.data);
+
+                return Object.assign({}, prev, {
+                    categories: [...prev.categories.filter(obj => uuid !== obj.UUID)]
+                });
+            }
+        });
+
+        subscribeToMore({
+            document: TASK_DELETED,
+            updateQuery: (prev, {subscriptionData }) => {
+                if (!subscriptionData.data) return prev;
+                const newFeedItem = subscriptionData.data.taskDeleted;
+
+                console.log("najpierw: ", prev.categories);
+
+                //for(let i = 0; i<prev.categories.length; i++){
+                //     prev.categories[i].tasks = prev.categories[i].tasks.filter(x => uuid !== x.UUID);
+                //}
+
+                console.log("pozniej: ", prev.categories);
+
+                // .map(x => {x.tasks = x.tasks.filter(obj => uuid !== obj.UUID); return x;})
+
+                return Object.assign({}, prev, {
+                    categories: [...prev.categories.map(obj => newFeedItem.UUID === obj.UUID ? newFeedItem : obj)]
+                });
+            }
+        });
     };
 
     useEffect(() => {
@@ -157,11 +218,11 @@ export const NoteList = () => {
 
     const classes = useStyles();
 
-    console.log(data);
+    //console.log(data);
 
 
     if (loading || !data) {
-        return <div> Loading... </div>;
+        return <div className='loading-div'> <CircularProgress /> </div>;
     } else if (error) {
         return <div> Error ${error.message} </div>;
     }
@@ -253,7 +314,7 @@ export const NoteList = () => {
                         )}
                     </Droppable>
                 </DragDropContext>
-                {editMode ?
+                {editMode || !data.categories || data.categories.length === 0 ?
                     <ListItem className={classes.nested}>
                         <AddNoteField ctx={constants.CTX_CATEGORY}/>
                     </ListItem>

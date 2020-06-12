@@ -26,6 +26,22 @@ import {DeleteAlert} from "../layout/DeleteAlert";
 import {useToasts} from "react-toast-notifications";
 
 import {constants} from "../../constants";
+import gql from "graphql-tag";
+import {useMutation} from "@apollo/react-hooks";
+
+
+const DELETE_CATEGORY = gql`
+    mutation DeleteCategory($UUID: String!) {
+        deleteCategory(UUID: $UUID)
+    }
+`;
+
+const DELETE_TASK = gql`
+    mutation DeleteTask($UUID: String!) {
+        deleteTask(UUID: $UUID)
+    }
+`;
+
 
 const useStyles = makeStyles((theme) => ({
     root: {
@@ -50,6 +66,9 @@ export const NoteItem = ({category, tasks, editMode}) => {
     const [expanded, setExpanded] = React.useState(false);
     //const [isDisabled, setIsDisabled] = React.useState(false);
 
+    const [deleteCategory] = useMutation(DELETE_CATEGORY);
+    const [deleteTask] = useMutation(DELETE_TASK);
+
     const classes = useStyles();
 
     // shows toast alert if deletion is successful
@@ -61,9 +80,22 @@ export const NoteItem = ({category, tasks, editMode}) => {
     };
 
     // handles delete button
-    const handleDeleteClick = e => {
-        console.log('klink ', e);
+    const handleDeleteClickTask = (e, uuid) => {
+        console.log('klink ', e, uuid);
         e.stopPropagation();
+
+        deleteTask({variables: {UUID: uuid}}).then();
+
+        showDeleteAlert();
+    };
+
+
+    const handleDeleteClickCategory = (e, uuid) => {
+        console.log('klink ', e, uuid);
+        e.stopPropagation();
+
+        deleteCategory({variables: {UUID: uuid}}).then();
+
         showDeleteAlert();
     };
 
@@ -101,7 +133,7 @@ export const NoteItem = ({category, tasks, editMode}) => {
                     { editMode ?
                         <ExpansionPanelActions>
                         <IconButton edge="end" aria-label="delete">
-                            <DeleteIcon onClick={handleDeleteClick}/>
+                            <DeleteIcon onClick={(e) => {handleDeleteClickCategory(e, category.UUID)}}/>
                         </IconButton>
                         </ExpansionPanelActions>
                         :
@@ -123,7 +155,7 @@ export const NoteItem = ({category, tasks, editMode}) => {
                                         <ListItemText primary={scalarToTimeString(note.date)}/>
                                         {editMode ?
                                             <IconButton edge="end" aria-label="delete">
-                                                <DeleteIcon onClick={handleDeleteClick}/>
+                                                <DeleteIcon onClick={(e) => {handleDeleteClickTask(e, note.UUID)}}/>
                                             </IconButton>
                                             :
                                             null

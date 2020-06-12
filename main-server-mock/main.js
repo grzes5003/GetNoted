@@ -7,6 +7,10 @@ const pubsub = new PubSub();
 const CATEGORY_ADDED = 'CATEGORY_ADDED';
 const TASK_ADDED = 'TASK_ADDED';
 
+const CATEGORY_DELETED = 'CATEGORY_DELETED';
+const TASK_DELETED = 'TASK_DELETED';
+
+
 const Tasks1 = ['WWW', 'JPWP', 'UST', 'TR', 'CPS'].map((str, index) => (
     {
         number: index,
@@ -61,13 +65,19 @@ const typeDefs = gql`
   
   type Mutation {
     swapCategoryPlaces(first: Int!, second: Int!): Boolean
+    
     addNewCategory(name: String!, date: Date): Category
     addNewTask(name: String!, categoryUUID: String!): Task
+    
+    deleteCategory(UUID: String!): Boolean
+    deleteTask(UUID: String!): Boolean
   }
   
   type Subscription {
     categoryAdded: Category
     taskAdded: Category
+    categoryDeleted: String
+    taskDeleted: Category
   }
   
   type Category {
@@ -146,6 +156,36 @@ const resolvers = {
 
             pubsub.publish(TASK_ADDED, {taskAdded: Categories.find(x => x.UUID === args.categoryUUID)});
             return Categories.find(x => x.UUID === args.categoryUUID).tasks[Categories.find(x => x.UUID === args.categoryUUID).tasks.length - 1];
+        },
+        deleteCategory: (_, args) => {
+            const catLen = Categories.length;
+            Categories = Categories.filter(x => args.UUID !== x.UUID);
+
+            console.log("cos tam ", args);
+
+            pubsub.publish(CATEGORY_DELETED, {categoryDeleted: args.UUID});
+
+            if(catLen === Categories.length) {
+                return false;
+            }
+            return true;
+        },
+        deleteTask: (_, args) => {
+
+            let resultCat;
+
+            for(let cat=0; cat<Categories.length; cat++){
+                if([Categories[cat].tasks.filter(x => args.UUID === x.UUID)].length !== 0){
+                    Categories[cat].tasks = Categories[cat].tasks.filter(x => args.UUID !== x.UUID);
+                    resultCat = Categories[cat];
+                }
+            }
+
+            console.log("cos tam ", args);
+
+            pubsub.publish(TASK_DELETED, {taskDeleted: resultCat});
+
+            return true;
         }
     },
     Subscription: {
@@ -154,6 +194,12 @@ const resolvers = {
         },
         taskAdded: {
             subscribe: () => pubsub.asyncIterator([TASK_ADDED]),
+        },
+        categoryDeleted: {
+            subscribe: () => pubsub.asyncIterator([CATEGORY_DELETED]),
+        },
+        taskDeleted: {
+            subscribe: () => pubsub.asyncIterator([TASK_DELETED]),
         }
     },
 };
