@@ -1,5 +1,5 @@
 import React from "react";
-import {makeStyles} from '@material-ui/core/styles';
+import {makeStyles, withStyles} from '@material-ui/core/styles';
 
 import ListItem from '@material-ui/core/ListItem';
 import ListItemText from '@material-ui/core/ListItemText';
@@ -28,6 +28,10 @@ import {useToasts} from "react-toast-notifications";
 import {constants} from "../../constants";
 import gql from "graphql-tag";
 import {useMutation} from "@apollo/react-hooks";
+import {StatusIcon} from "../utils/StatusIcon";
+import ButtonBase from "@material-ui/core/ButtonBase";
+import LinearProgress from "@material-ui/core/LinearProgress";
+import Grid from "@material-ui/core/Grid";
 
 
 const DELETE_CATEGORY = gql`
@@ -42,6 +46,11 @@ const DELETE_TASK = gql`
     }
 `;
 
+const CHANGE_TASK_STATUS = gql`
+    mutation ChangeTaskStatus($UUID: String!) {
+        changeTaskStatus(UUID: $UUID)
+    }
+`;
 
 const useStyles = makeStyles((theme) => ({
     root: {
@@ -58,6 +67,20 @@ const useStyles = makeStyles((theme) => ({
     },
 }));
 
+const BorderLinearProgress = withStyles((theme) => ({
+    root: {
+        height: 10,
+        borderRadius: 5,
+    },
+    colorPrimary: {
+        backgroundColor: theme.palette.grey[theme.palette.type === 'light' ? 200 : 700],
+    },
+    bar: {
+        borderRadius: 5,
+        backgroundColor: '#1a90ff',
+    },
+}))(LinearProgress);
+
 export const NoteItem = ({category, tasks, editMode}) => {
 
     const { addToast } = useToasts();
@@ -68,6 +91,7 @@ export const NoteItem = ({category, tasks, editMode}) => {
 
     const [deleteCategory] = useMutation(DELETE_CATEGORY);
     const [deleteTask] = useMutation(DELETE_TASK);
+    const [changeTaskStatus] = useMutation(CHANGE_TASK_STATUS);
 
     const classes = useStyles();
 
@@ -116,6 +140,13 @@ export const NoteItem = ({category, tasks, editMode}) => {
         return t.filter(v => v.status).length
     };
 
+    // handle triggered when task status is changed
+    const handleTaskStatusChange = (e, uuid) => {
+        e.stopPropagation();
+        console.log("handle: ", uuid);
+        changeTaskStatus({variables: {UUID: uuid}}).then();
+    };
+
     return (
         <ExpansionPanel expanded={expanded}>
             <ExpansionPanelSummary
@@ -124,12 +155,17 @@ export const NoteItem = ({category, tasks, editMode}) => {
                 <ListItem>
                     <ListItemAvatar>
                         <Badge badgeContent={countTasks(category.tasks)} color="primary">
-                        <Avatar onClick={handleChange(expanded)} >
-
-                        </Avatar>
+                            <StatusIcon onClick={handleChange(expanded)}/>
                         </Badge>
                     </ListItemAvatar>
-                    <ListItemText primary={category.name}  onClick={handleChange(expanded)}/>
+                    <Grid onClick={handleChange(expanded)} className='category-grid-div'>
+                        <ListItemText primary={category.name} />
+                        {category.tasks.length !== 0 ?
+                            <BorderLinearProgress variant="determinate" value={(countTasks(category.tasks)/category.tasks.length)*100}/>
+                            :
+                            null
+                        }
+                    </Grid>
                     { editMode ?
                         <ExpansionPanelActions>
                         <IconButton edge="end" aria-label="delete">
@@ -148,8 +184,9 @@ export const NoteItem = ({category, tasks, editMode}) => {
                                 <div>
                                     <ListItem className={classes.nested}>
                                         <ListItemAvatar>
-                                            <Avatar>
-                                            </Avatar>
+                                            <ButtonBase onClick={(e) => {handleTaskStatusChange(e,note.UUID)}}>
+                                                <StatusIcon active={note.status} />
+                                            </ButtonBase>
                                         </ListItemAvatar>
                                         <ListItemText primary={note.name} secondary={note.status.toString()}/>
                                         <ListItemText primary={scalarToTimeString(note.date)}/>

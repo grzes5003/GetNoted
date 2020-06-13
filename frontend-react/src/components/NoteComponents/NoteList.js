@@ -5,7 +5,7 @@ import List from '@material-ui/core/List';
 
 import gql from 'graphql-tag';
 import {useMutation, useQuery, useSubscription} from '@apollo/react-hooks';
-import {makeStyles} from "@material-ui/core/styles";
+import {makeStyles, withStyles } from "@material-ui/core/styles";
 import ListItem from "@material-ui/core/ListItem";
 import ListItemText from "@material-ui/core/ListItemText";
 import IconButton from '@material-ui/core/IconButton';
@@ -21,6 +21,8 @@ import {ToastProvider, useToasts} from 'react-toast-notifications'
 import {DragDropContext, Droppable, Draggable} from "react-beautiful-dnd";
 import {constants} from "../../constants";
 import CircularProgress from "@material-ui/core/CircularProgress";
+import {StatusIcon} from "../utils/StatusIcon";
+import LinearProgress from '@material-ui/core/LinearProgress';
 
 const GET_NOTES_LIST = gql`
 {
@@ -105,6 +107,25 @@ const  CATEGORY_DELETED = gql`
     categoryDeleted  
   }
 `;
+
+const TASK_STATUS_CHANGED = gql`
+    subscription TaskCategoryChanged {
+        taskStatusChanged {
+            number
+            name
+            UUID
+            tasks {
+                UUID
+                name
+                date
+                status
+                number
+            }
+            date
+        }
+    }
+`;
+
 
 
 const useStyles = makeStyles((theme) => ({
@@ -195,7 +216,7 @@ export const NoteList = () => {
                 if (!subscriptionData.data) return prev;
                 const newFeedItem = subscriptionData.data.taskDeleted;
 
-                console.log("najpierw: ", prev.categories);
+                console.log("deleted: ", newFeedItem );
 
                 //for(let i = 0; i<prev.categories.length; i++){
                 //     prev.categories[i].tasks = prev.categories[i].tasks.filter(x => uuid !== x.UUID);
@@ -204,6 +225,20 @@ export const NoteList = () => {
                 console.log("pozniej: ", prev.categories);
 
                 // .map(x => {x.tasks = x.tasks.filter(obj => uuid !== obj.UUID); return x;})
+
+                return Object.assign({}, prev, {
+                    categories: [...prev.categories.map(obj => newFeedItem.UUID === obj.UUID ? newFeedItem : obj)]
+                });
+            }
+        });
+
+        subscribeToMore({
+            document: TASK_STATUS_CHANGED,
+            updateQuery: (prev, {subscriptionData }) => {
+                if (!subscriptionData.data) return prev;
+                const newFeedItem = subscriptionData.data.taskStatusChanged;
+
+                console.log("cotam: ", subscriptionData.data);
 
                 return Object.assign({}, prev, {
                     categories: [...prev.categories.map(obj => newFeedItem.UUID === obj.UUID ? newFeedItem : obj)]

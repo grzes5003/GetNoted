@@ -1,5 +1,8 @@
 const {v4} = require('uuid');
 const {ApolloServer, MockList, gql, PubSub} = require('apollo-server');
+const { importSchema } = require('graphql-import');
+
+const typeDefs = importSchema('./schema/schema.graphql');
 
 let now = new Date();
 const pubsub = new PubSub();
@@ -9,6 +12,8 @@ const TASK_ADDED = 'TASK_ADDED';
 
 const CATEGORY_DELETED = 'CATEGORY_DELETED';
 const TASK_DELETED = 'TASK_DELETED';
+
+const TASK_STATUS_CHANGED = 'TASK_STATUS_CHANGED';
 
 
 const Tasks1 = ['WWW', 'JPWP', 'UST', 'TR', 'CPS'].map((str, index) => (
@@ -53,54 +58,54 @@ let Categories = ['Semestr Letni', 'Staż', 'Wakacje 2020'].map((str, index) => 
     }
 ));
 
-const typeDefs = gql`
-  scalar Date
-
-  type Query {
-    hello: String
-    resolved: [Category]
-    categories: [Category]
-    people: [Person]
-  }
-  
-  type Mutation {
-    swapCategoryPlaces(first: Int!, second: Int!): Boolean
-    
-    addNewCategory(name: String!, date: Date): Category
-    addNewTask(name: String!, categoryUUID: String!): Task
-    
-    deleteCategory(UUID: String!): Boolean
-    deleteTask(UUID: String!): Boolean
-  }
-  
-  type Subscription {
-    categoryAdded: Category
-    taskAdded: Category
-    categoryDeleted: String
-    taskDeleted: Category
-  }
-  
-  type Category {
-    UUID: String
-    number: Int
-    name: String
-    tasks: [Task]
-    date: Date
-  }
-  
-  type Task {
-    number: Int
-    UUID: String
-    name: String
-    date: Date
-    status: Boolean
-  }
-  
-  type Person {
-    name: String
-    age: Int
-  }
-`;
+// const typeDefs = gql`
+//   scalar Date
+//
+//   type Query {
+//     hello: String
+//     resolved: [Category]
+//     categories: [Category]
+//     people: [Person]
+//   }
+//
+//   type Mutation {
+//     swapCategoryPlaces(first: Int!, second: Int!): Boolean
+//
+//     addNewCategory(name: String!, date: Date): Category
+//     addNewTask(name: String!, categoryUUID: String!): Task
+//
+//     deleteCategory(UUID: String!): Boolean
+//     deleteTask(UUID: String!): Boolean
+//   }
+//
+//   type Subscription {
+//     categoryAdded: Category
+//     taskAdded: Category
+//     categoryDeleted: String
+//     taskDeleted: Category
+//   }
+//
+//   type Category {
+//     UUID: String
+//     number: Int
+//     name: String
+//     tasks: [Task]
+//     date: Date
+//   }
+//
+//   type Task {
+//     number: Int
+//     UUID: String
+//     name: String
+//     date: Date
+//     status: Boolean
+//   }
+//
+//   type Person {
+//     name: String
+//     age: Int
+//   }
+// `;
 
 let tmpList = [0, 1, 2, 3, 4, 5, 6, 7];
 
@@ -114,8 +119,6 @@ const resolvers2 = {
 
 const resolvers = {
     Query: {
-        resolved: () => 'Resolved',
-        people: () => new MockList([5, 12]),
         categories: () => {
             return Categories
         }
@@ -175,15 +178,34 @@ const resolvers = {
             let resultCat;
 
             for(let cat=0; cat<Categories.length; cat++){
-                if([Categories[cat].tasks.filter(x => args.UUID === x.UUID)].length !== 0){
+                if(Categories[cat].tasks.filter(x => args.UUID === x.UUID).length !== 0){
                     Categories[cat].tasks = Categories[cat].tasks.filter(x => args.UUID !== x.UUID);
                     resultCat = Categories[cat];
                 }
             }
 
-            console.log("cos tam ", args);
+            console.log("cos tam123 ", args);
 
             pubsub.publish(TASK_DELETED, {taskDeleted: resultCat});
+
+            return true;
+        },
+        changeTaskStatus: (_, args) => {
+
+            let resultCate;
+
+            for(let cat=0; cat<Categories.length; cat++){
+                if(Categories[cat].tasks.filter(x => args.UUID === x.UUID).length !== 0){
+                    for(let t=0; t<Categories[cat].tasks.length; t++) {
+                        if( Categories[cat].tasks[t].UUID === args.UUID){
+                            Categories[cat].tasks[t].status = !Categories[cat].tasks[t].status;
+                            resultCate = Categories[cat];
+                        }
+                    }
+                }
+            }
+
+            pubsub.publish(TASK_STATUS_CHANGED, {taskStatusChanged: resultCate});
 
             return true;
         }
@@ -200,6 +222,9 @@ const resolvers = {
         },
         taskDeleted: {
             subscribe: () => pubsub.asyncIterator([TASK_DELETED]),
+        },
+        taskStatusChanged: {
+            subscribe: () => pubsub.asyncIterator([TASK_STATUS_CHANGED]),
         }
     },
 };
