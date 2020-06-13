@@ -1,0 +1,20 @@
+# docker-compose.yml
+version: '3'
+services:
+  app:
+    build:
+      context: server-node
+      dockerfile: Dockerfile
+    ports:
+      - 4000:4000
+    links:
+      - redis
+    environment:
+      - NODE_ENV=development
+      - REDIS_URL=redis://db
+
+  redis:
+    image: "redis:alpine"
+    container_name: db
+    expose:
+      - 6379
