@@ -14,8 +14,10 @@ import {strings} from "./localization";
 
 const cache = new InMemoryCache();
 
-const GRAPHQL_BASE_URL_HTTP = 'http://localhost:4000/graphql';
-const GRAPHQL_BASE_URL_WS = 'ws://localhost:4000/graphql';
+//const GRAPHQL_BASE_URL_HTTP = 'http://localhost:4000/graphql';
+//const GRAPHQL_BASE_URL_WS = 'ws://localhost:4000/graphql';
+const GRAPHQL_BASE_URL_HTTP = 'http://192.168.99.100:4000/graphql';
+const GRAPHQL_BASE_URL_WS = 'ws://192.168.99.100:4000/graphql';
 
 const httpLink = new HttpLink({
     uri: GRAPHQL_BASE_URL_HTTP,
