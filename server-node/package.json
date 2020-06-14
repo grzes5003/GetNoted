@@ -16,6 +16,7 @@
     "pug": "2.0.0-beta11",
     "redis": "^3.0.2",
     "uuid": "latest",
-    "dotenv": "^8.2.0"
+    "dotenv": "^8.2.0",
+    "cors": "latest"
   }
 }

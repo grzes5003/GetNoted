@@ -9,6 +9,7 @@ export const strings = new LocalizedStrings({
 
         addNote: "Add new element",
         viewProfile: "View profile",
+        login: "Login",
         logout: "Logout",
         search: "Search...",
         allNotes: "All",
@@ -16,7 +17,14 @@ export const strings = new LocalizedStrings({
         recentlyDoneNotes: "Recently done",
         undo: "UNDO",
         deleteDataAlert: "Record deleted successfully",
-        addLabel: "Add"
+        addLabel: "Add",
+        emptyTextField: "Empty field",
+        usernameOrEmail: "Username or Email",
+        password: 'Password',
+        email: 'Email',
+        username: 'Username',
+        register: 'Register',
+        badEmail: 'Not valid email address'
     },
     it: {
         how:"Come vuoi il tuo uovo oggi?",
@@ -30,13 +38,21 @@ export const strings = new LocalizedStrings({
         addNote: "Dodaj nowy element",
         viewProfile: "Zobacz profil",
         logout: "Wyloguj",
+        login: "Zaloguj się",
         search: "Szukaj...",
         allNotes: "Wszystkie",
         soonNotes: "Nadchodzące",
         recentlyDoneNotes: "Ostatnio wykonane",
         deleteDataAlert: "Wpis usunięty poprawnie",
         undo: "COFNIJ",
-        addLabel: "Dodaj"
+        addLabel: "Dodaj",
+        emptyTextField: "Puste pole",
+        usernameOrEmail: "Nazwa użytkownika lub mail",
+        password: 'Hasło',
+        email: 'Email',
+        username: 'Nazwa użytkownika',
+        register: 'Zarejestruj się',
+        badEmail: 'Nieprawidłowy adress email',
     }
 
 });

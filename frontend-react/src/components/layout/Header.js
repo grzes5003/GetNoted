@@ -7,6 +7,8 @@ import Toolbar from '@material-ui/core/Toolbar';
 import IconButton from "@material-ui/core/IconButton";
 import AccountCircleIcon from '@material-ui/icons/AccountCircle';
 
+import { logout} from "../utils/auth";
+
 import ListItemIcon from '@material-ui/core/ListItemIcon';
 import ListItemText from '@material-ui/core/ListItemText';
 
@@ -110,7 +112,7 @@ const StyledMenuItem = withStyles((theme) => ({
     },
 }))(MenuItem);
 
-export const Header = () => {
+export const Header = ({isUserLogged, setIsUserLogged}) => {
     const classes = useStyles();
 
     const [anchorEl, setAnchorEl] = React.useState(null);
@@ -123,6 +125,11 @@ export const Header = () => {
         setAnchorEl(null);
     };
 
+    const handleLogoutAction = e => {
+        e.stopPropagation();
+        e.preventDefault();
+        logout(setIsUserLogged).then(() => {});
+    };
 
     return <header className="header" data-testid="header">
         <AppBar position={"static"}>
@@ -166,7 +173,7 @@ export const Header = () => {
                             <ListItemText primary={strings.viewProfile} />
                         </StyledMenuItem>
 
-                        <StyledMenuItem>
+                        <StyledMenuItem onClick={handleLogoutAction}>
                             <ListItemIcon>
                                 <ExitToAppIcon fontSize='small'/>
                             </ListItemIcon>

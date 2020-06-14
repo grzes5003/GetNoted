@@ -1,14 +1,14 @@
 import React from "react";
 import {Redirect} from 'react-router-dom';
 
-export const withAuth = (Component) => {
-    const isLoggedIn = true;
+export const withAuth = (Component, isUserLogged, setIsUserLogged) => {
+    //const isLoggedIn = false;
     return () => {
-        if(!isLoggedIn) {
-            return <Redirect to='/login'/>
+        if(!isUserLogged) {
+            return <Redirect to='/'/>
         }
         return (
-            <Component/>
+            <Component isUserLogged={isUserLogged} setIsUserLogged={setIsUserLogged}/>
         )
     }
 };

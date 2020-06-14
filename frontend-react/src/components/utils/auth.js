@@ -15,13 +15,16 @@ export function login ({ jwt_token, jwt_token_expiry, loggedStateHandler }, noRe
     }
 }
 
-export async function logout () {
+export async function logout (loggedStateHandler) {
     inMemoryToken = null;
     const url = `${constants.HOST_ADDRESS}/api/logout`;
     const response = await fetch(url, {
         method: 'POST',
         credentials: 'include',
     });
+
+    console.log('logout action');
+    loggedStateHandler(false);
 
     // to support logging out from all windows
     window.localStorage.setItem('logout', Date.now());

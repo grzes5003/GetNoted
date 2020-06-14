@@ -15,6 +15,7 @@ export const App = () => {
     const [isUserLogged, setIsUserLogged] = React.useState(false);
 
     const loggedStateHandler = (val) => {
+        console.log('changed logged status to', val.toString());
         setIsUserLogged(val);
     };
 
@@ -23,7 +24,7 @@ export const App = () => {
             <Router>
                 <Switch>
                     <Route path="/" exact render={(props) => <HomePage {...props} isUserLogged={isUserLogged}/>}/>
-                    <Route path="/profile" component={withAuth(ProfilePage)}/>
+                    <Route path="/profile" component={withAuth(ProfilePage, isUserLogged, setIsUserLogged)}/>
                     <Route path="/login" render={(props) => <LoginPage {...props} isUserLogged={isUserLogged} loggedStateHandler={loggedStateHandler}/>}/>
                     <Route path="/register" render={(props) => <RegisterPage {...props} isUserLogged={isUserLogged} loggedStateHandler={loggedStateHandler}/>}/>
                 </Switch>
