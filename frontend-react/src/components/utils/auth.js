@@ -4,12 +4,15 @@ import {constants} from "../../constants";
 
 let inMemoryToken;
 
-export function login ({ jwt_token, jwt_token_expiry, loggedStateHandler }, noRedirect) {
+export function login ({ token, token_expiry, loggedStateHandler }, noRedirect) {
     loggedStateHandler(true);
     inMemoryToken = {
-        token: jwt_token,
-        expiry: jwt_token_expiry
+        token: token,
+        expiry: token_expiry
     };
+
+    localStorage.setItem('token', token);
+
     if (!noRedirect) {
         return <Redirect to='/profile'/>
     }
@@ -22,6 +25,8 @@ export async function logout (loggedStateHandler) {
         method: 'POST',
         credentials: 'include',
     });
+
+    localStorage.clear();
 
     console.log('logout action');
     loggedStateHandler(false);

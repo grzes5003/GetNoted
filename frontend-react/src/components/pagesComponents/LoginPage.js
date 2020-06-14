@@ -102,8 +102,9 @@ export const LoginPage = ({isUserLogged, loggedStateHandler}) => {
                 body: JSON.stringify({username, password})
             });
             if (response.status === 200) {
-                const {jwt_token, jwt_token_expiry} = await response.json();
-                await login({jwt_token, jwt_token_expiry, loggedStateHandler})
+                const {token, token_expiry} = await response.json();
+                localStorage.setItem('username', username);
+                await login({token, token_expiry, loggedStateHandler})
             } else {
                 console.log('Login failed.');
                 let error = new Error(response.statusText);
