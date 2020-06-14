@@ -32,7 +32,7 @@ const resolvers = {
                     const Categories = JSON.parse(value);
                     return Categories;
                 }
-                return ''
+                return null
             });
         }
     },
@@ -41,6 +41,9 @@ const resolvers = {
             const USER = USER_PREFIX + context.username;
             return getAsync(USER)
                 .then(value => {
+                    if(!value){
+                        return false;
+                    }
                     let Categories = JSON.parse(value);
                     [Categories[args.first], Categories[args.second]] = [Categories[args.second], Categories[args.first]];
                     console.log('swaped places', context);
@@ -51,6 +54,9 @@ const resolvers = {
             const USER = USER_PREFIX + context.username;
             return getAsync(USER)
                 .then(value => {
+                    if(!value){
+                        return '';
+                    }
                     let Categories = JSON.parse(value);
                     Categories.push({
                         number: Categories.length,
@@ -68,6 +74,9 @@ const resolvers = {
             const USER = USER_PREFIX + context.username;
             return getAsync(USER)
                 .then(value => {
+                    if(!value){
+                        return '';
+                    }
                     let Categories = JSON.parse(value);
                     Categories.find(x => x.UUID === args.categoryUUID).tasks.push({
                         number: Categories.find(x => x.UUID === args.categoryUUID).tasks.length,
@@ -85,6 +94,9 @@ const resolvers = {
             const USER = USER_PREFIX + context.username;
             return getAsync(USER)
                 .then(value => {
+                    if(!value){
+                        return false;
+                    }
                     let Categories = JSON.parse(value);
                     const catLen = Categories.length;
                     Categories = Categories.filter(x => args.UUID !== x.UUID);
@@ -105,6 +117,10 @@ const resolvers = {
             const USER = USER_PREFIX + context.username;
             return getAsync(USER)
                 .then(value => {
+                    if(!value){
+                        return false;
+                    }
+
                     let Categories = JSON.parse(value);
                     let resultCat;
 
@@ -124,6 +140,10 @@ const resolvers = {
             const USER = USER_PREFIX + context.username;
             return getAsync(USER)
                 .then(value => {
+                    if(!value){
+                        return false;
+                    }
+
                     let Categories = JSON.parse(value);
                     let resultCate;
 

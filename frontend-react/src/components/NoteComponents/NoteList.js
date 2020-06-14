@@ -5,7 +5,7 @@ import List from '@material-ui/core/List';
 
 import gql from 'graphql-tag';
 import {useMutation, useQuery, useSubscription} from '@apollo/react-hooks';
-import {makeStyles, withStyles } from "@material-ui/core/styles";
+import {makeStyles, withStyles} from "@material-ui/core/styles";
 import ListItem from "@material-ui/core/ListItem";
 import ListItemText from "@material-ui/core/ListItemText";
 import IconButton from '@material-ui/core/IconButton';
@@ -25,87 +25,87 @@ import {StatusIcon} from "../utils/StatusIcon";
 import LinearProgress from '@material-ui/core/LinearProgress';
 
 const GET_NOTES_LIST = gql`
-{
-    categories {
-        name 
-        number
-        UUID
-        date
-        tasks {
+    {
+        categories {
             name
             number
             UUID
             date
-            status
+            tasks {
+                name
+                number
+                UUID
+                date
+                status
+            }
         }
     }
-}
 `;
 
 const SWAP_NOTES = gql`
-mutation SwapCategoryPlaces($first: Int!, $second: Int!) {
-    swapCategoryPlaces(first: $first, second: $second)
-}
+    mutation SwapCategoryPlaces($first: Int!, $second: Int!) {
+        swapCategoryPlaces(first: $first, second: $second)
+    }
 `;
 
 const CATEGORY_SUBSCRIPTION = gql`
-  subscription CategoryAdded {
-    categoryAdded {
-      number
-      name
-      UUID
-      tasks {
-        UUID
-        name
-        date
-        status
-        number
-      }
-      date
+    subscription CategoryAdded {
+        categoryAdded {
+            number
+            name
+            UUID
+            tasks {
+                UUID
+                name
+                date
+                status
+                number
+            }
+            date
+        }
     }
-  }
 `;
 
 const TASK_SUBSCRIPTION = gql`
-  subscription TaskAdded {
-    taskAdded {
-      number
-      name
-      UUID
-      tasks {
-        UUID
-        name
-        date
-        status
-        number
-      }
-      date
+    subscription TaskAdded {
+        taskAdded {
+            number
+            name
+            UUID
+            tasks {
+                UUID
+                name
+                date
+                status
+                number
+            }
+            date
+        }
     }
-  }
 `;
 
-const  TASK_DELETED = gql`
-  subscription TaskDeleted {
-    taskDeleted {
-      number
-      name
-      UUID
-      tasks {
-        UUID
-        name
-        date
-        status
-        number
-      }
-      date
+const TASK_DELETED = gql`
+    subscription TaskDeleted {
+        taskDeleted {
+            number
+            name
+            UUID
+            tasks {
+                UUID
+                name
+                date
+                status
+                number
+            }
+            date
+        }
     }
-  }
 `;
 
-const  CATEGORY_DELETED = gql`
-  subscription CategoryDeleted {
-    categoryDeleted  
-  }
+const CATEGORY_DELETED = gql`
+    subscription CategoryDeleted {
+        categoryDeleted
+    }
 `;
 
 const TASK_STATUS_CHANGED = gql`
@@ -125,7 +125,6 @@ const TASK_STATUS_CHANGED = gql`
         }
     }
 `;
-
 
 
 const useStyles = makeStyles((theme) => ({
@@ -170,21 +169,21 @@ export const NoteList = () => {
     const subscribeToNewCategories = () => {
         subscribeToMore({
             document: CATEGORY_SUBSCRIPTION,
-            updateQuery: (prev, {subscriptionData }) => {
+            updateQuery: (prev, {subscriptionData}) => {
                 if (!subscriptionData.data) return prev;
                 const newFeedItem = subscriptionData.data.categoryAdded;
 
                 console.log(prev);
 
                 return Object.assign({}, prev, {
-                        categories: [...prev.categories,newFeedItem]
+                    categories: [...prev.categories, newFeedItem]
                 });
             }
         });
 
         subscribeToMore({
             document: TASK_SUBSCRIPTION,
-            updateQuery: (prev, {subscriptionData }) => {
+            updateQuery: (prev, {subscriptionData}) => {
                 if (!subscriptionData.data) return prev;
                 const newFeedItem = subscriptionData.data.taskAdded;
 
@@ -198,7 +197,7 @@ export const NoteList = () => {
 
         subscribeToMore({
             document: CATEGORY_DELETED,
-            updateQuery: (prev, {subscriptionData }) => {
+            updateQuery: (prev, {subscriptionData}) => {
                 if (!subscriptionData.data) return prev;
                 const uuid = subscriptionData.data.categoryDeleted;
 
@@ -212,11 +211,11 @@ export const NoteList = () => {
 
         subscribeToMore({
             document: TASK_DELETED,
-            updateQuery: (prev, {subscriptionData }) => {
+            updateQuery: (prev, {subscriptionData}) => {
                 if (!subscriptionData.data) return prev;
                 const newFeedItem = subscriptionData.data.taskDeleted;
 
-                console.log("deleted: ", newFeedItem );
+                console.log("deleted: ", newFeedItem);
 
                 //for(let i = 0; i<prev.categories.length; i++){
                 //     prev.categories[i].tasks = prev.categories[i].tasks.filter(x => uuid !== x.UUID);
@@ -234,7 +233,7 @@ export const NoteList = () => {
 
         subscribeToMore({
             document: TASK_STATUS_CHANGED,
-            updateQuery: (prev, {subscriptionData }) => {
+            updateQuery: (prev, {subscriptionData}) => {
                 if (!subscriptionData.data) return prev;
                 const newFeedItem = subscriptionData.data.taskStatusChanged;
 
@@ -257,7 +256,7 @@ export const NoteList = () => {
 
 
     if (loading || !data) {
-        return <div className='loading-div'> <CircularProgress /> </div>;
+        return <div className='loading-div'><CircularProgress/></div>;
     } else if (error) {
         return <div> Error ${error.message} </div>;
     }
@@ -308,6 +307,27 @@ export const NoteList = () => {
         data.categories = items;
     };
 
+    if(data){
+        return (
+            <div className={classes.root}>
+                <List>
+                    <ListItem>
+                        <ListItemText primary=''/>
+                        <IconButton edge="end" aria-label="delete">
+                            <EditIcon onClick={changeEditModeState} color={editMode ? 'secondary' : 'primary'}/>
+                        </IconButton>
+                    </ListItem>
+                    {editMode || !data || !data.categories || data.categories.length === 0 ?
+                        <ListItem className={classes.nested}>
+                            <AddNoteField ctx={constants.CTX_CATEGORY}/>
+                        </ListItem>
+                        :
+                        null
+                    }
+                </List>
+            </div>
+        )
+    }
 
     return (
         <div className={classes.root}>
@@ -318,6 +338,7 @@ export const NoteList = () => {
                         <EditIcon onClick={changeEditModeState} color={editMode ? 'secondary' : 'primary'}/>
                     </IconButton>
                 </ListItem>
+
                 <DragDropContext onDragEnd={onDragEnd}>
                     <Droppable droppableId="droppable">
                         {(provided, snapshot) => (
@@ -349,7 +370,7 @@ export const NoteList = () => {
                         )}
                     </Droppable>
                 </DragDropContext>
-                {editMode || !data.categories || data.categories.length === 0 ?
+                {editMode || !data || !data.categories || data.categories.length === 0 ?
                     <ListItem className={classes.nested}>
                         <AddNoteField ctx={constants.CTX_CATEGORY}/>
                     </ListItem>

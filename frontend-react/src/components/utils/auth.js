@@ -33,6 +33,9 @@ export async function logout (loggedStateHandler) {
 
     // to support logging out from all windows
     window.localStorage.setItem('logout', Date.now());
+
+    window.location.reload(false);
+
     return <Redirect to='/'/>
 }
 
