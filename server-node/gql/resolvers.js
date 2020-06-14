@@ -13,35 +13,42 @@ const TASK_DELETED = 'TASK_DELETED';
 
 const TASK_STATUS_CHANGED = 'TASK_STATUS_CHANGED';
 
-const USER = 'user:1';
-
+const USER_TMP = 'user:1';
+const USER_PREFIX = 'user:';
 
 const resolvers = {
     Query: {
-        hello: () => {
+        hello: ({context}) => {
             console.log("ROBI SIE");
-            return 'no siema123'
-        }
-        ,
-        categories: () => {
+            return 'no siema123' + context
+        },
+        categories: (_, args, context) => {
+            const USER = USER_PREFIX + context.username;
+
+            console.log('username: ', USER);
             return getAsync(USER).then(value => {
-                console.log(value);
-                const Categories = JSON.parse(value);
-                return Categories;
+                if(value) {
+                    console.log(value);
+                    const Categories = JSON.parse(value);
+                    return Categories;
+                }
+                return ''
             });
         }
     },
     Mutation: {
-        swapCategoryPlaces: (_, s) => {
+        swapCategoryPlaces: (_, args, context) => {
+            const USER = USER_PREFIX + context.username;
             return getAsync(USER)
                 .then(value => {
                     let Categories = JSON.parse(value);
-                    [Categories[s.first], Categories[s.second]] = [Categories[s.second], Categories[s.first]];
-                    console.log('swaped places');
+                    [Categories[args.first], Categories[args.second]] = [Categories[args.second], Categories[args.first]];
+                    console.log('swaped places', context);
                     return setAsync(USER, JSON.stringify(Categories)).then(() => {return true});
                 });
         },
-        addNewCategory: (_, args) => {
+        addNewCategory: (_, args, context) => {
+            const USER = USER_PREFIX + context.username;
             return getAsync(USER)
                 .then(value => {
                     let Categories = JSON.parse(value);
@@ -57,7 +64,8 @@ const resolvers = {
                     return setAsync(USER, JSON.stringify(Categories)).then(() => {return Categories[Categories.length - 1]});
                 });
         },
-        addNewTask: (_, args) => {
+        addNewTask: (_, args, context) => {
+            const USER = USER_PREFIX + context.username;
             return getAsync(USER)
                 .then(value => {
                     let Categories = JSON.parse(value);
@@ -73,7 +81,8 @@ const resolvers = {
                     return setAsync(USER, JSON.stringify(Categories)).then(() => {return Categories.find(x => x.UUID === args.categoryUUID).tasks[Categories.find(x => x.UUID === args.categoryUUID).tasks.length - 1]});
                 });
         },
-        deleteCategory: (_, args) => {
+        deleteCategory: (_, args, context) => {
+            const USER = USER_PREFIX + context.username;
             return getAsync(USER)
                 .then(value => {
                     let Categories = JSON.parse(value);
@@ -92,7 +101,8 @@ const resolvers = {
                     });
                 });
         },
-        deleteTask: (_, args) => {
+        deleteTask: (_, args, context) => {
+            const USER = USER_PREFIX + context.username;
             return getAsync(USER)
                 .then(value => {
                     let Categories = JSON.parse(value);
@@ -110,7 +120,8 @@ const resolvers = {
                     return setAsync(USER, JSON.stringify(Categories)).then(() => true);
                 });
         },
-        changeTaskStatus: (_, args) => {
+        changeTaskStatus: (_, args, context) => {
+            const USER = USER_PREFIX + context.username;
             return getAsync(USER)
                 .then(value => {
                     let Categories = JSON.parse(value);

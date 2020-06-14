@@ -13,6 +13,7 @@ const app = require('../app');
 const debug = require('debug')('server-node:server');
 const http = require('http');
 const client = require('../redis-client/client');
+const {getUser} = require("../auth/util");
 
 /**
  * Get port from environment and store in Express.
@@ -30,6 +31,22 @@ app.set('port', port);
 const apolloServer = new ApolloServer({
     typeDefs: typeDefs,
     resolvers: resolver,
+    context: ({ req , res}) => {
+        //console.log('my req is: ', req);
+        if(req) {
+            const token = req.headers['authorization'] || '';
+            console.log('got new token context with: ', token);
+
+            const username = getUser(token);
+
+            console.log('got new context username with: ', username);
+            //console.log('got new auth with: ', req.headers['authorization']);
+            //console.log('got new context with: ', username);
+            return { username };
+        }
+        // add the user to the context
+        return { username: '' };
+    }
 });
 
 // subscriptions: {
@@ -76,7 +93,7 @@ server.on('listening', onListening);
  */
 
 function normalizePort(val) {
-    var port = parseInt(val, 10);
+    let port = parseInt(val, 10);
 
     if (isNaN(port)) {
         // named pipe

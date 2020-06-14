@@ -6,7 +6,8 @@ import {ApolloProvider} from 'react-apollo';
 import {ApolloClient} from 'apollo-client';
 import {HttpLink} from 'apollo-link-http';
 import { WebSocketLink } from 'apollo-link-ws';
-import { split } from 'apollo-link';
+import {ApolloLink, split} from 'apollo-link';
+import { setContext } from 'apollo-link-context';
 import { getMainDefinition } from 'apollo-utilities';
 import {InMemoryCache} from 'apollo-cache-inmemory';
 
@@ -18,6 +19,40 @@ const cache = new InMemoryCache();
 //const GRAPHQL_BASE_URL_WS = 'ws://localhost:4000/graphql';
 const GRAPHQL_BASE_URL_HTTP = 'http://192.168.99.100:4000/graphql';
 const GRAPHQL_BASE_URL_WS = 'ws://192.168.99.100:4000/graphql';
+
+
+const authLink = setContext((_, { headers }) => {
+    // get the authentication token from local storage if it exists
+    const token = localStorage.getItem('token');
+
+    console.log(headers);
+    // return the headers to the context so httpLink can read them
+    return {
+        headers: {
+            ...headers,
+            authorization: token ? token : "",
+        }
+    }
+});
+
+
+
+// const authLink = new ApolloLink((operation, forward) => {
+//     // get the authentication token from local storage if it exists
+//     const token = localStorage.getItem('token');
+//     // return the headers to the context so httpLink can read them
+//
+//     console.log('token is: ', token);
+//
+//
+//     operation.setContext({
+//         headers: {
+//             authorization: token ? token : ''
+//         }
+//     });
+//
+//     return forward(operation);
+// });
 
 const httpLink = new HttpLink({
     uri: GRAPHQL_BASE_URL_HTTP,
@@ -44,7 +79,7 @@ const link = split(
 );
 
 const client = new ApolloClient({
-    link: link,
+    link: authLink.concat(link),
     cache,
 });
 

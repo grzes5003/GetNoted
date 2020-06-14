@@ -14,7 +14,15 @@ function verifyAccessToken(token) {
     })
 }
 
+function getUser(token) {
+    return jwt.verify(token, process.env.TOKEN_SECRET, function (err, decoded) {
+        console.log('decoded ',decoded);
+        return decoded.username
+    })
+}
+
 module.exports = {
     generateAccessToken,
-    verifyAccessToken
+    verifyAccessToken,
+    getUser
 };
