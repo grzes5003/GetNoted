@@ -63,7 +63,7 @@ export const RegisterPage = ({isUserLogged, loggedStateHandler}) => {
     const [emailErrorText, setEmailErrorText] = React.useState('');
     const [loginError, setLoginError] = React.useState(false);
     const [passError, setPassError] = React.useState(false);
-    const [userData, setUserData] = React.useState({email: '', username: '', password: '', error: ''});
+    const [userData, setUserData] = React.useState({email: '', username: '', password: '', error: '', response: ''});
 
     function validateEmail(email) {
         const re = /^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
@@ -78,7 +78,8 @@ export const RegisterPage = ({isUserLogged, loggedStateHandler}) => {
         event.preventDefault();
         setUserData({
             ...userData,
-            error: ''
+            error: '',
+            response: '',
         });
 
         const {email, username, password} = userData;
@@ -114,6 +115,12 @@ export const RegisterPage = ({isUserLogged, loggedStateHandler}) => {
                 body: JSON.stringify({email, username, password})
             });
             if (response.status === 200) {
+                setUserData(
+                    Object.assign({}, userData, {
+                        response: response ? response.statusText : ''
+                    })
+                );
+
                 return <Redirect to='/login'/>
             } else {
                 console.log('Registration failed.');
@@ -229,7 +236,16 @@ export const RegisterPage = ({isUserLogged, loggedStateHandler}) => {
 
                         <Button variant="outlined" color="primary" type='submit'>{strings.register}</Button>
 
-                        {userData.error && <p className='error'>Error: {userData.error}</p>}
+                        {userData.error &&
+                        <Typography color="secondary">
+                            {userData.error}
+                        </Typography>
+                        }
+                        {userData.response &&
+                        <Typography color="primary">
+                            {userData.response}
+                        </Typography>
+                        }
                     </form>
                 </CardContent>
             </Card>

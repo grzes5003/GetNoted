@@ -149,7 +149,7 @@ const useStyles = makeStyles((theme) => ({
 
 export const NoteList = () => {
 
-    const [pageData, setPageData] = React.useState();
+    const [myData, setMyData] = React.useState([]);
 
     const [editMode, setEditMode] = React.useState(false);
     const changeEditModeState = () => setEditMode(!editMode);
@@ -246,6 +246,8 @@ export const NoteList = () => {
         });
     };
 
+
+
     useEffect(() => {
         subscribeToNewCategories();
     }, []);
@@ -254,12 +256,6 @@ export const NoteList = () => {
 
     //console.log(data);
 
-
-    if (loading || !data) {
-        return <div className='loading-div'><CircularProgress/></div>;
-    } else if (error) {
-        return <div> Error ${error.message} </div>;
-    }
 
     // swaps list items based on startIndex and endIndex
     const reorder = (list, startIndex, endIndex) => {
@@ -307,27 +303,44 @@ export const NoteList = () => {
         data.categories = items;
     };
 
-    if(data){
-        return (
-            <div className={classes.root}>
-                <List>
-                    <ListItem>
-                        <ListItemText primary=''/>
-                        <IconButton edge="end" aria-label="delete">
-                            <EditIcon onClick={changeEditModeState} color={editMode ? 'secondary' : 'primary'}/>
-                        </IconButton>
-                    </ListItem>
-                    {editMode || !data || !data.categories || data.categories.length === 0 ?
-                        <ListItem className={classes.nested}>
-                            <AddNoteField ctx={constants.CTX_CATEGORY}/>
-                        </ListItem>
-                        :
-                        null
-                    }
-                </List>
-            </div>
-        )
+    useEffect(() => {
+        console.log('setting data', data);
+        if (data === null || !myData) {
+            setMyData({
+                categories: []
+            });
+        } else {
+            setMyData(data);
+        }
+    });
+
+    if (loading || !data) {
+        return <div className='loading-div'><CircularProgress/></div>;
+    } else if (error) {
+        return <div> Error ${error.message} </div>;
     }
+
+    // if(data === null){
+    //     return (
+    //         <div className={classes.root}>
+    //             <List>
+    //                 <ListItem>
+    //                     <ListItemText primary=''/>
+    //                     <IconButton edge="end" aria-label="delete">
+    //                         <EditIcon onClick={changeEditModeState} color={editMode ? 'secondary' : 'primary'}/>
+    //                     </IconButton>
+    //                 </ListItem>
+    //                 {editMode || !data || !data.categories || data.categories.length === 0 ?
+    //                     <ListItem className={classes.nested}>
+    //                         <AddNoteField ctx={constants.CTX_CATEGORY}/>
+    //                     </ListItem>
+    //                     :
+    //                     null
+    //                 }
+    //             </List>
+    //         </div>
+    //     )
+    // }
 
     return (
         <div className={classes.root}>
@@ -347,7 +360,7 @@ export const NoteList = () => {
                                 ref={provided.innerRef}
                                 style={getListStyle(snapshot.isDraggingOver)}
                             >
-                                {data.categories.map((note, index) => (
+                                {data === null ? null : data.categories.map((note, index) => (
                                         <Draggable key={note.number} draggableId={note.UUID} index={index}>
                                             {(provided, snapshot) => (
                                                 <div

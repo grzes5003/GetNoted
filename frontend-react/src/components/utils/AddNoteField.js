@@ -96,6 +96,7 @@ export const AddNoteField = ({ctx, cat}) => {
 
     const handleAddButton = e => {
         e.stopPropagation();
+        e.preventDefault();
         cleanInput();
 
         console.log("input add ", inputText, catUUID);
@@ -125,7 +126,7 @@ export const AddNoteField = ({ctx, cat}) => {
 
     return (
         <Card>
-        <form className='form-edit-input' noValidate autoComplete="off">
+        <form className='form-edit-input' noValidate autoComplete="off" onSubmit={handleAddButton}>
             <Grid container spacing={3}>
                 <Grid item xs={12}>
                 <TextField className={classes.root} id="outlined-basic"

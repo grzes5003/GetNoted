@@ -12,6 +12,7 @@ const saltRounds = 2;
 
 const indexRouter = require('./routes/index');
 const usersRouter = require('./routes/users');
+const {newClientSetup} = require("./redis-client/client");
 const {verifyAccessToken, generateAccessToken} = require("./auth/util");
 const {getAsync, setAsync} = require("./redis-client/client");
 
@@ -52,7 +53,7 @@ app.post('/api/register', function (req, res) {
                     email: email,
                     password: hash
                 })).then(() => {
-                    setAsync('user:' + username, '').then(() => {
+                    setAsync('user:' + username, JSON.stringify(newClientSetup())).then(() => {
                         res.status(200).send(JSON.stringify({message: "Welcome to the club!"}));
                     });
                 });

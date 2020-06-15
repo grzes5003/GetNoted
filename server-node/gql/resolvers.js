@@ -27,8 +27,8 @@ const resolvers = {
 
             console.log('username: ', USER);
             return getAsync(USER).then(value => {
+                console.log(value ? value : 'nie mam zawartosci');
                 if(value) {
-                    console.log(value);
                     const Categories = JSON.parse(value);
                     return Categories;
                 }
