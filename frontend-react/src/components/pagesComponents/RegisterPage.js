@@ -56,20 +56,23 @@ const useStyles = makeStyles({
     },
 });
 
-
+// Registration component included on Home page
 export const RegisterPage = ({isUserLogged, loggedStateHandler}) => {
     const classes = useStyles();
 
+    // states for registration form
     const [emailErrorText, setEmailErrorText] = React.useState('');
     const [loginError, setLoginError] = React.useState(false);
     const [passError, setPassError] = React.useState(false);
     const [userData, setUserData] = React.useState({email: '', username: '', password: '', error: '', response: ''});
 
+    // email format validator
     function validateEmail(email) {
         const re = /^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
         return re.test(email);
     }
 
+    // handles registration form submit
     async function handleSubmit(event) {
         setLoginError(false);
         setPassError(false);
@@ -143,6 +146,7 @@ export const RegisterPage = ({isUserLogged, loggedStateHandler}) => {
         }
     }
 
+    // if user is logged redirect him to his profile page
     if (isUserLogged) {
         return <Redirect to='/profile'/>
     }

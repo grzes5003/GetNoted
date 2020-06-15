@@ -36,6 +36,7 @@ const useStyles = makeStyles((theme) => ({
     },
 }));
 
+// LeftDrawer is side menu
 export const LeftDrawer = () => {
 
     const classes = useStyles();

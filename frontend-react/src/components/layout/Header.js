@@ -112,6 +112,8 @@ const StyledMenuItem = withStyles((theme) => ({
     },
 }))(MenuItem);
 
+
+// Header component is application NavBar
 export const Header = ({isUserLogged, setIsUserLogged}) => {
     const classes = useStyles();
 

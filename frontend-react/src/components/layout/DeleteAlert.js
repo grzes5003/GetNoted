@@ -15,6 +15,7 @@ const useStyles = makeStyles((theme) => ({
     },
 }));
 
+// small toast popup showed if user deletes element
 export const DeleteAlert = ({text, dismiss}) => {
     const classes = useStyles();
 

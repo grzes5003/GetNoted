@@ -1,5 +1,6 @@
 import React from "react";
 
+// icon used for signalizing if particular task is completed
 export const StatusIcon = ({active}) => {
     const orange = "#FC7A1E";
     const grey = "#a4a4a4";

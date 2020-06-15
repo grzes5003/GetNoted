@@ -19,6 +19,7 @@ const useStyles = makeStyles((theme) => ({
     }
 }));
 
+// Home page with registration Component included
 export const HomePage = ({isUserLogged}) => {
     const history = useHistory();
     const classes = useStyles();

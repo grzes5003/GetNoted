@@ -1,5 +1,6 @@
 import LocalizedStrings from 'react-localization';
 
+// localization file, containing all (almost) strings used in App
 export const strings = new LocalizedStrings({
     en:{
         how:"How do you want your egg today?",

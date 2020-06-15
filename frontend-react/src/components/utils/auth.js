@@ -4,6 +4,8 @@ import {constants} from "../../constants";
 
 let inMemoryToken;
 
+// login helper
+// saves token and redirects to profile
 export function login ({ token, token_expiry, loggedStateHandler }, noRedirect) {
     loggedStateHandler(true);
     inMemoryToken = {
@@ -18,6 +20,8 @@ export function login ({ token, token_expiry, loggedStateHandler }, noRedirect) 
     }
 }
 
+// logout helper
+// deletes token and redirects to home page
 export async function logout (loggedStateHandler) {
     inMemoryToken = null;
     const url = `${constants.HOST_ADDRESS}/api/logout`;

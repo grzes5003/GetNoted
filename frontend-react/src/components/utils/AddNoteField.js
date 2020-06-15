@@ -70,11 +70,13 @@ const useStyles = makeStyles((theme) => ({
     }
 }));
 
+// From located inside content Component, used to input user data
 export const AddNoteField = ({ctx, cat}) => {
     let catUUID = cat ? cat.UUID : null;
 
     const classes = useStyles();
 
+    // graphQl mutation definition
     const [addNewTask, _] = useMutation(ADD_NEW_TASK, {
         update(cache, {data: { GET_NOTES_LIST }}) {
             const { categories } = cache.readQuery({query: GET_NOTES_LIST});
@@ -85,6 +87,7 @@ export const AddNoteField = ({ctx, cat}) => {
         }
     });
 
+    // graphQl mutation definition
     const [addNewCategory, {retCat}] = useMutation(ADD_NEW_CATEGORY);
 
     const [selectedDate, setSelectedDate] = React.useState(new Date());
@@ -94,6 +97,7 @@ export const AddNoteField = ({ctx, cat}) => {
         setSelectedDate(date);
     };
 
+    // hander for form submit
     const handleAddButton = e => {
         e.stopPropagation();
         e.preventDefault();
@@ -101,6 +105,7 @@ export const AddNoteField = ({ctx, cat}) => {
 
         console.log("input add ", inputText, catUUID);
 
+        // weather form refers to Category or Task
         if(ctx === constants.CTX_CATEGORY) {
             addNewCategory({variables: {name: inputText, date: selectedDate}}).then();
         }
@@ -119,6 +124,7 @@ export const AddNoteField = ({ctx, cat}) => {
         setInputText(e.target.value);
     };
 
+    // input cleaner after submit
     const cleanInput = () => {
         setInputText('');
         setSelectedDate(new Date());

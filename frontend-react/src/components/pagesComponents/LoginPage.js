@@ -58,14 +58,17 @@ const useStyles = makeStyles({
     },
 });
 
+// Login page component
 export const LoginPage = ({isUserLogged, loggedStateHandler}) => {
     const history = useHistory();
     const classes = useStyles();
 
+    // states for login form
     const [loginError, setLoginError] = React.useState(false);
     const [passError, setPassError] = React.useState(false);
     const [userData, setUserData] = React.useState({username: '', password: '', error: ''});
 
+    // function handling login form
     async function handleSubmit(event) {
         setLoginError(false);
         setPassError(false);
@@ -127,6 +130,7 @@ export const LoginPage = ({isUserLogged, loggedStateHandler}) => {
         }
     }
 
+    // redirects to home page if logo is clicked
     const homeButton = (e) => {
         e.preventDefault();
         e.stopPropagation();
@@ -134,6 +138,7 @@ export const LoginPage = ({isUserLogged, loggedStateHandler}) => {
         history.push("/");
     };
 
+    // if user is logged redirect him to his profile page
     if (isUserLogged) {
         return <Redirect to='/profile'/>
     }

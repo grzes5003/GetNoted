@@ -32,6 +32,7 @@ const useStyles = makeStyles((theme) => ({
     },
 }));
 
+// React Component defining content element of page
 export const Content = () => {
     const classes = useStyles();
 

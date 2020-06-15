@@ -13,7 +13,11 @@ import {login} from "./components/utils/auth";
 
 const IsUserLogged = React.createContext(false);
 
+// Entry for react app
 export const App = () => {
+
+    // state informing if user is logged
+    // changes every time such event occurs
     const [isUserLogged, setIsUserLogged] = React.useState(false);
 
     const loggedStateHandler = (val) => {
@@ -21,6 +25,7 @@ export const App = () => {
         setIsUserLogged(val);
     };
 
+    // checks if user is logged in
     async function checkIfLoggedIn() {
         const token = localStorage.getItem("token");
         const username = localStorage.getItem("username");
@@ -36,6 +41,7 @@ export const App = () => {
         console.log(url);
 
         try {
+            // request validation of user token sent to server
             const response = await fetch(url, {
                 method: 'POST',
                 credentials: 'include',
@@ -45,6 +51,7 @@ export const App = () => {
                 },
                 body: JSON.stringify({token, username})
             });
+            // if token is valid server returns code 200
             if (response.status === 200) {
                 const {token} = await response.json();
                 setIsUserLogged(true);
@@ -60,10 +67,12 @@ export const App = () => {
         }
     }
 
+    // check if user is logged on mount
     React.useEffect(() => {
         checkIfLoggedIn().then(r => {});
     }, []);
 
+    // basic router defining subpages
     return (
         <IsUserLogged.Provider value={false}>
             <Router>

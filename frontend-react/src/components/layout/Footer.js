@@ -7,6 +7,8 @@ import {EnglishFlag} from "../logos/EnglishFlag";
 import Button from "@material-ui/core/Button";
 import Cookies from 'universal-cookie';
 
+// footer used only on login and home page
+// shows countries flags as buttons
 export const Footer = () => {
     const cookie = new Cookies();
     const current = new Date();

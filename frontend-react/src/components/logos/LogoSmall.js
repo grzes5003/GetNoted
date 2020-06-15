@@ -1,5 +1,6 @@
 import React from "react";
 
+// Small version of website logo
 export const LogoSmall = () => {
     return (
         <svg width="188" height="39" viewBox="0 0 188 39" fill="none" xmlns="http://www.w3.org/2000/svg">
