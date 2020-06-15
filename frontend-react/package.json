@@ -30,7 +30,8 @@
     "react-scripts": "3.4.1",
     "react-toast-notifications": "^2.4.0",
     "subscriptions-transport-ws": "^0.9.16",
-    "universal-cookie": "^4.0.3"
+    "universal-cookie": "^4.0.3",
+    "dotenv": "latest"
   },
   "scripts": {
     "start": "react-scripts start",

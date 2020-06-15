@@ -8,6 +8,9 @@ const bcrypt = require('bcrypt');
 const dotenv = require("dotenv");
 
 dotenv.config();
+dotenv.config({path: `./.env.${process.env.NODE_ENV === "production" ? 'production' : 'development'}`});
+
+
 const saltRounds = 2;
 
 const indexRouter = require('./routes/index');
@@ -30,9 +33,10 @@ app.use(cors({
 app.use(express.json());
 app.use(express.urlencoded({extended: false}));
 app.use(cookieParser());
-app.use(express.static(path.join(__dirname, 'public')));
+app.use(express.static(path.join(__dirname, 'public/build')));
 
-app.use('/', indexRouter);
+console.log(path.join(__dirname, 'public'));
+
 app.use('/users', usersRouter);
 
 app.post('/api/register', function (req, res) {

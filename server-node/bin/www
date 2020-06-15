@@ -84,6 +84,10 @@ console.log(`🚀 Subscriptions ready at ws://localhost:${port}${apolloServer.su
  * Listen on provided port, on all network interfaces.
  */
 
+app.use('/', function (req, res) {
+    res.sendFile(path.join(__dirname, 'public/build/index.html'));
+});
+
 server.listen(port);
 server.on('error', onError);
 server.on('listening', onListening);

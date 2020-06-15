@@ -13,13 +13,22 @@ import {InMemoryCache} from 'apollo-cache-inmemory';
 import Cookies from 'universal-cookie';
 
 import {strings} from "./localization";
+import {constants} from "./constants";
 
 const cache = new InMemoryCache();
 
 //const GRAPHQL_BASE_URL_HTTP = 'http://localhost:4000/graphql';
 //const GRAPHQL_BASE_URL_WS = 'ws://localhost:4000/graphql';
-const GRAPHQL_BASE_URL_HTTP = 'http://192.168.99.100:4000/graphql';
-const GRAPHQL_BASE_URL_WS = 'ws://192.168.99.100:4000/graphql';
+
+let PROD;
+if (!process.env.NODE_ENV || process.env.NODE_ENV === 'development') {
+    PROD = false;
+} else {
+    PROD = true
+}
+
+const GRAPHQL_BASE_URL_HTTP = PROD ? constants.HOST_ADDRESS + '/graphql' : 'http://192.168.99.100:4000/graphql';
+const GRAPHQL_BASE_URL_WS = PROD ? constants.HOST_ADDRESS_WS + '/graphql' : 'ws://192.168.99.100:4000/graphql';
 
 
 const authLink = setContext((_, { headers }) => {
