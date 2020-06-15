@@ -303,16 +303,16 @@ export const NoteList = () => {
         data.categories = items;
     };
 
-    useEffect(() => {
-        console.log('setting data', data);
-        if (data === null || !myData) {
-            setMyData({
-                categories: []
-            });
-        } else {
-            setMyData(data);
-        }
-    });
+    // useEffect(() => {
+    //     console.log('setting data', data);
+    //     if (data === null || !myData) {
+    //         setMyData({
+    //             categories: []
+    //         });
+    //     } else {
+    //         setMyData(data);
+    //     }
+    // });
 
     if (loading || !data) {
         return <div className='loading-div'><CircularProgress/></div>;
