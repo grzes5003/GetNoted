@@ -14,6 +14,7 @@ import Button from "@material-ui/core/Button";
 import {strings} from "../../localization";
 import Typography from "@material-ui/core/Typography";
 import ButtonBase from "@material-ui/core/ButtonBase";
+import {Footer} from "../layout/Footer";
 
 const useStyles = makeStyles({
     root: {
@@ -219,6 +220,7 @@ export const LoginPage = ({isUserLogged, loggedStateHandler}) => {
             <div className='background-text'>
                 GetNoted
             </div>
+            <Footer/>
         </div>
     )
 };

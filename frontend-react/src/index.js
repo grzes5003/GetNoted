@@ -10,6 +10,7 @@ import {ApolloLink, split} from 'apollo-link';
 import { setContext } from 'apollo-link-context';
 import { getMainDefinition } from 'apollo-utilities';
 import {InMemoryCache} from 'apollo-cache-inmemory';
+import Cookies from 'universal-cookie';
 
 import {strings} from "./localization";
 
@@ -54,6 +55,8 @@ const authLink = setContext((_, { headers }) => {
 //     return forward(operation);
 // });
 
+const cookies = new Cookies();
+
 const httpLink = new HttpLink({
     uri: GRAPHQL_BASE_URL_HTTP,
 });
@@ -83,7 +86,13 @@ const client = new ApolloClient({
     cache,
 });
 
-strings.setLanguage('pl');
+const pageLang = cookies.get('page_lang');
+
+if(pageLang) {
+    strings.setLanguage(pageLang);
+} else {
+    strings.setLanguage('eng');
+}
 
 render(
     <React.StrictMode>

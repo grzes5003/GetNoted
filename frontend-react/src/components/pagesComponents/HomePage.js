@@ -5,6 +5,7 @@ import {makeStyles} from "@material-ui/core/styles";
 import Button from "@material-ui/core/Button";
 import {strings} from "../../localization";
 import {RegisterPage} from "./RegisterPage";
+import {Footer} from "../layout/Footer";
 
 const useStyles = makeStyles((theme) => ({
     margin: {
@@ -45,6 +46,7 @@ export const HomePage = ({isUserLogged}) => {
             <div className='background-text'>
                 GetNoted
             </div>
+            <Footer/>
         </div>
     )
 };
