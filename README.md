@@ -3,6 +3,9 @@
 > ### React.js + Express.js with Apollo GraphQl API
 
 # GetNoted
+![Node.js CI](https://github.com/grzes5003/GetNoted/workflows/Node.js%20CI/badge.svg?branch=master)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+
 Organise, list and store all your tasks. Small React app with express.js backend made for WWWiJS. 
 Based on GrapqhQl API implemented with Apollo. Basic JWT and Passport authentication. 
 
