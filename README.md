@@ -1,6 +1,6 @@
 ![alt text](pb/GetNotedBigLogo.png)
 
-> ### React.js + Express.js with Apollo GraphQl API
+> ### React.js + Express.js with Apollo GraphQl API + Redis
 
 # GetNoted
 ![Node.js CI](https://github.com/grzes5003/GetNoted/workflows/Node.js%20CI/badge.svg?branch=master)
@@ -54,4 +54,3 @@ Backend (`server-node`) is divided into several parts:
 - `/redis-client`: as name suggests it defines basic client for communication with Redis daemon
 - `app.js`, `/bin/www`: defines Express.js server and Apollo Server
 
- 
