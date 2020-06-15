@@ -1,3 +1,4 @@
+const {findNumberNewCategory} = require("../auth/util");
 const { PubSub } = require('apollo-server-express');
 const {v4} = require('uuid');
 const {getAsync, setAsync, keysAsync} = require('../redis-client/client');
@@ -59,7 +60,8 @@ const resolvers = {
                     }
                     let Categories = JSON.parse(value);
                     Categories.push({
-                        number: Categories.length,
+                        number: findNumberNewCategory(Categories.length, Categories),
+                            //Categories.length > Math.max.apply(Math, Categories.map(function(o) { return o.number; })) ? Categories.length : Math.max.apply(Math, Categories.map(function(o) { return o.number; })),
                         UUID: v4(),
                         name: args.name,
                         tasks: [],
@@ -79,7 +81,8 @@ const resolvers = {
                     }
                     let Categories = JSON.parse(value);
                     Categories.find(x => x.UUID === args.categoryUUID).tasks.push({
-                        number: Categories.find(x => x.UUID === args.categoryUUID).tasks.length,
+                        number: Categories.find(x => x.UUID === args.categoryUUID).tasks.length > Math.max.apply(Math, Categories.find(x => x.UUID === args.categoryUUID).tasks.map(function(o) { return o.number; })) ?
+                            Categories.find(x => x.UUID === args.categoryUUID).tasks.length : Math.max.apply(Math, Categories.find(x => x.UUID === args.categoryUUID).tasks.map(function(o) { return o.number; })),
                         UUID: v4(),
                         name: args.name,
                         date: Categories.find(x => x.UUID === args.categoryUUID).date,

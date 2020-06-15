@@ -9,12 +9,17 @@ import Cookies from 'universal-cookie';
 
 export const Footer = () => {
     const cookie = new Cookies();
+    const current = new Date();
+    const nextYear = new Date();
+
+    nextYear.setFullYear(current.getFullYear() + 1);
+
     console.log('language is: ', strings.getLanguage());
     return (
         <div>
             <div className='footer'>
-                <Button onClick={() => {cookie.set('page_lang','pl'); window.location.reload(false);}}> <PolishFlag/> </Button>
-                <Button onClick={() => {cookie.set('page_lang','eng'); window.location.reload(false);}}> <EnglishFlag/> </Button>
+                <Button onClick={() => {cookie.set('page_lang','pl', {path: '/', expires: nextYear}); window.location.reload(false);}}> <PolishFlag/> </Button>
+                <Button onClick={() => {cookie.set('page_lang','eng', {path: '/', expires: nextYear}); window.location.reload(false);}}> <EnglishFlag/> </Button>
             </div>
         </div>
     )
